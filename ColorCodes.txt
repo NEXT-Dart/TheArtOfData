@@ -1,15 +1,8 @@
 000 = Rood    = #ff0000
-
 001 = Blauw   = #0000ff
-
 010 = Groen   = #008000
-
 011 = Zwart   = #000000
-
 100 = Magenta = #ff00ff
-
 101 = Cyaan   = #00ffff
-
 110 = Oranje  = #ffa500
-
 111 = Grijs   = #808080
