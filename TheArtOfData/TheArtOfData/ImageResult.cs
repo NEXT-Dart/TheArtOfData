@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheArtOfData.Art;
 
 namespace TheArtOfData
 {
@@ -11,21 +12,24 @@ namespace TheArtOfData
     {
         #region "Fields"
 
-        private Image image;
+        private Dictionary<Type, Image> image;
         private int colorsPerRow;
         private byte[] data;
         private ImageDataWriter idw;
         private DateTime timestamp;
+        private Type[] outputTypes;
 
         #endregion
 
         #region "Constructors"
 
-        public ImageResult(byte[] data, int colorsPerRow)
+        public ImageResult(byte[] data, int colorsPerRow, params Type[] outputImages)
         {
             this.data = data;
             this.colorsPerRow = colorsPerRow;
             this.timestamp = DateTime.Now;
+            this.outputTypes = outputImages;
+            image = new Dictionary<Type, Image>();
         }
 
         #endregion
@@ -37,7 +41,7 @@ namespace TheArtOfData
             get { return timestamp; }
         }
 
-        public Image Image
+        public Dictionary<Type, Image> Image
         {
             get { return image; }
         }
@@ -50,7 +54,14 @@ namespace TheArtOfData
         {
             idw = new ImageDataWriter();
             idw.AddBytes(data);
-            image = idw.GetImage(colorsPerRow);
+            image.Add(typeof(ImageDataWriter), idw.GetImage(colorsPerRow));
+
+            foreach (Type type in outputTypes)
+            {
+                ArtGenerator gen = Activator.CreateInstance(type) as ArtGenerator;
+                gen.AddBytes(data);
+                image.Add(type, gen.GetImage());
+            }
         }
 
         #endregion
