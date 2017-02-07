@@ -20,6 +20,7 @@ namespace TheArtOfDecoding
         public static readonly DataColors Orange = new DataColors(6);
         public static readonly DataColors Gray = new DataColors(7);
         public static readonly DataColors Grey = new DataColors(7);
+        public static readonly DataColors Purple = new DataColors(8);
 
         private int value;
 
@@ -86,6 +87,8 @@ namespace TheArtOfDecoding
                     return Color.FromArgb(255, 165, 0);
                 case 7:
                     return Color.FromArgb(128, 128, 128);
+                case 8:
+                    return Color.FromArgb(160, 115, 255);
                 default:
                     return Color.White;
             }
@@ -109,6 +112,8 @@ namespace TheArtOfDecoding
                 return new DataColors(6);
             else if (c == Color.FromArgb(128, 128, 128))
                 return new DataColors(7);
+            else if (c == Color.FromArgb(160, 115, 255))
+                return new DataColors(8);
             else
                 return new DataColors(-1);
         }

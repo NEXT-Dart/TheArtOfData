@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ImageProcessor;
 using System.Windows.Forms;
 using System.IO;
-using ImageProcessor.Imaging;
+using ColorMine.ColorSpaces;
+using ColorMine.ColorSpaces.Comparisons;
 
 namespace TheArtOfDecoding
 {
     class ImageParser
     {
-
         private const int pixelsPerRow = 10;
 
         public Image image { get; private set; }
@@ -21,7 +19,6 @@ namespace TheArtOfDecoding
         public ImageParser(string filename)
         {
             image = Image.FromFile(filename);
-            //Display();
         }
 
         public Image Run()
@@ -29,7 +26,7 @@ namespace TheArtOfDecoding
             Transform();
             Crop();
             Read();
-            return null;
+            return image;
         }
 
         private void Crop()
@@ -38,10 +35,7 @@ namespace TheArtOfDecoding
             imageFactory.Load(image);
             imageFactory.EntropyCrop();
             
-            imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) , "crop.bmp"));
-            image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
-            //Display();
-
+            image = imageFactory.Image;
         }
 
         private void Transform()
@@ -53,13 +47,7 @@ namespace TheArtOfDecoding
             imageFactory.Brightness(15);
             imageFactory.Contrast(75);
 
-            //ResizeLayer resizeLayer = new ResizeLayer(new Size(pixelsPerRow, 0));
-            //resizeLayer.ResizeMode = ResizeMode.Max;
-            //imageFactory.Resize(resizeLayer);
-
-            imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
-            image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
-            //Display();
+            image = imageFactory.Image;
         }
 
         private void Read()
@@ -73,7 +61,7 @@ namespace TheArtOfDecoding
 
             while (true)
             {
-                pixels.Add(bmp.GetPixel(x, y));
+                pixels.Add(correctColor(bmp.GetPixel(x, y)));
                 x += step;
                 steps++;
                 if (steps > 9)
@@ -88,12 +76,54 @@ namespace TheArtOfDecoding
             ImageFromList(pixels);
         }
 
+        private Color correctColor(Color color)
+        {
+            Color colorToReturn = Color.White;
+            List<Color> colors = new List<Color>();
+            colors.Add(DataColors.Red);
+            colors.Add(DataColors.Blue);
+            colors.Add(DataColors.Green);
+            colors.Add(DataColors.Black);
+            colors.Add(DataColors.Magenta);
+            colors.Add(DataColors.Cyan);
+            colors.Add(DataColors.Orange);
+            colors.Add(DataColors.Gray);
+            colors.Add(DataColors.Purple);
+
+
+            Rgb colorrgb = new Rgb { R = color.R, G = color.G, B = color.B };
+
+            double deltaC = 99999999999;
+
+            foreach (Color c in colors)
+            {
+                Rgb cRgb = new Rgb { R = c.R, G = c.G, B = c.B };
+
+                double deltaE = cRgb.Compare(colorrgb, new Cie1976Comparison());
+                if (deltaE < deltaC)
+                {
+                    deltaC = deltaE;
+                    colorToReturn = c == DataColors.Purple ? (Color)DataColors.Blue : c;
+                }
+
+            }
+
+            return colorToReturn;
+        }
+
+
+
+        private int doubleToIntCeiling(double v)
+        {
+            return (int)(v + 1);
+        }
+
         private void ImageFromList(List<Color> list)
         {
             Bitmap img = new Bitmap(pixelsPerRow, ((int)((double)list.Count / pixelsPerRow) + 1));
 
             int pixel = 0;
-            for(int y = 0; y < img.Height; y++)
+            for (int y = 0; y < img.Height; y++)
             {
                 for (int x = 0; x < img.Width; x++)
                 {
