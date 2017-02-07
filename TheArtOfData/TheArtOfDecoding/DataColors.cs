@@ -5,20 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheArtOfData
+namespace TheArtOfDecoding
 {
-    enum DataColors1
-    {
-        Red = 0,
-        Blue,
-        Green,
-        Black,
-        Magenta,
-        Cyan,
-        Orange,
-        Gray
-    }
-
     class DataColors
     {
         #region "Fields"
@@ -103,9 +91,36 @@ namespace TheArtOfData
             }
         }
 
+        public static implicit operator DataColors(Color c)
+        {
+            if (c == Color.FromArgb(255, 0, 0))
+                return new DataColors(0);
+            else if (c == Color.FromArgb(0, 0, 255))
+                return new DataColors(1);
+            else if (c == Color.FromArgb(0, 128, 0))
+                return new DataColors(2);
+            else if (c == Color.FromArgb(0, 0, 0))
+                return new DataColors(3);
+            else if (c == Color.FromArgb(255, 0, 255))
+                return new DataColors(4);
+            else if (c == Color.FromArgb(0, 255, 255))
+                return new DataColors(5);
+            else if (c == Color.FromArgb(255, 165, 0))
+                return new DataColors(6);
+            else if (c == Color.FromArgb(128, 128, 128))
+                return new DataColors(7);
+            else
+                return new DataColors(-1);
+        }
+
         public static implicit operator DataColors(int value)
         {
             return new DataColors(value);
+        }
+
+        public static implicit operator int(DataColors dc)
+        {
+            return dc.value;
         }
 
         #endregion

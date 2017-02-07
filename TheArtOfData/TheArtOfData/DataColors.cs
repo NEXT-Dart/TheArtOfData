@@ -7,18 +7,6 @@ using System.Threading.Tasks;
 
 namespace TheArtOfData
 {
-    enum DataColors1
-    {
-        Red = 0,
-        Blue,
-        Green,
-        Black,
-        Magenta,
-        Cyan,
-        Orange,
-        Gray
-    }
-
     class DataColors
     {
         #region "Fields"
