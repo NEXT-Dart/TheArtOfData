@@ -18,5 +18,23 @@ namespace TheArtOfDecoding
         {
             return null;
         }
+
+        private Image Crop(Image i)
+        {
+
+            return null;
+        }
+
+        private Image Transform(Image i)
+        {
+
+            return null;
+        }
+
+        private Image Read(Image i)
+        {
+
+            return null;
+        }
     }
 }
