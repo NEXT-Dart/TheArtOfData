@@ -12,7 +12,7 @@ namespace TheArtOfDecoding
 {
     class ImageParser
     {
-        private const int pixelsPerRow = 10;
+        private int pixelsPerRow = 10;
 
         public Image image { get; private set; }
 
@@ -24,9 +24,62 @@ namespace TheArtOfDecoding
         public Image Run()
         {
             Crop();
-            Transform();
+            ChangeBrightnessAndContrast();
+            //Straighten();
+            //pixelsPerRow = GetPixelsFromImage(image);
             Read();
             return image;
+        }
+
+        private int GetPixelsFromImage(Image image)
+        {
+            Bitmap bmp = new Bitmap(image);
+            //go from left to right. Check most common width.
+            for (int i = 0; i < image.Width; i++)
+            {
+                List<Color> pixels = new List<Color>();
+                int x = 1;
+                int y = x;
+
+
+                while (true)
+                {
+                    pixels.Add(correctColor(bmp.GetPixel(x, y)));
+                    x++;
+                    if (x >= bmp.Width)
+                    {
+                        break;
+                    }
+                }
+
+                int currentPixelsFromPixelInImage = 0;
+                int minimalPixelsFromPixelInImage = 999999;
+
+                Color tempC = Color.White;
+                foreach (Color c in pixels)
+                {
+                    //change current to minimal or something
+                    if (c.Equals(tempC))
+                    {
+                        currentPixelsFromPixelInImage++;
+                    }
+                    else
+                    {
+                        if(currentPixelsFromPixelInImage < minimalPixelsFromPixelInImage)
+                        {
+                            minimalPixelsFromPixelInImage = currentPixelsFromPixelInImage;
+                        }
+                    }
+
+                    tempC = c;
+                }
+
+
+                return bmp.Width / minimalPixelsFromPixelInImage;
+            }
+
+            //go from top to bottom. Check most common heigth
+            return 0;
         }
 
         private void Crop()
@@ -47,7 +100,7 @@ namespace TheArtOfDecoding
 
         }
 
-        private void Transform()
+        private void ChangeBrightnessAndContrast()
         {
 
             ImageFactory imageFactory = new ImageFactory();

@@ -20,6 +20,7 @@ namespace TheArtOfDecoding
         private void button1_Click(object sender, EventArgs e)
         {
             OpenFileDialog open = new OpenFileDialog();
+            open.InitialDirectory = @"..\..\..\..\Test images";
             if (open.ShowDialog() == DialogResult.Cancel)
             {
                 return;
