@@ -39,7 +39,7 @@ namespace TheArtOfDecoding
             imageFactory.EntropyCrop();
             
             imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) , "crop.bmp"));
-            //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
+            image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
             //Display();
 
         }
@@ -57,8 +57,8 @@ namespace TheArtOfDecoding
             //resizeLayer.ResizeMode = ResizeMode.Max;
             //imageFactory.Resize(resizeLayer);
 
-            //imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
-            //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
+            imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
+            image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
             //Display();
         }
 
@@ -71,20 +71,18 @@ namespace TheArtOfDecoding
             int x = step / 2;
             int y = x;
 
-            bool stop = false;
-            while (!stop)
+            while (true)
             {
                 pixels.Add(bmp.GetPixel(x, y));
                 x += step;
-                if (steps >= 9)
+                steps++;
+                if (steps > 9)
                 {
                     y += step;
                     x = step / 2;
                     steps = 0;
                 }
-                if (y > bmp.Height)
-                    stop = true;
-                steps++;
+                if (y > bmp.Height) break;
             }
 
             ImageFromList(pixels);
@@ -110,7 +108,7 @@ namespace TheArtOfDecoding
             image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "i.bmp"));
         }
 
-        private void Display()
+        private void Display(Image i)
         {
             Form form = new Form();
             form.StartPosition = FormStartPosition.CenterScreen;
@@ -120,7 +118,7 @@ namespace TheArtOfDecoding
             PictureBox pb = new PictureBox();
             pb.SizeMode = PictureBoxSizeMode.Zoom;
             pb.Dock = DockStyle.Fill;
-            pb.Image = image;
+            pb.Image = i;
 
             form.Controls.Add(pb);
             form.ShowDialog();
