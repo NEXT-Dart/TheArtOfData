@@ -23,19 +23,28 @@ namespace TheArtOfDecoding
 
         public Image Run()
         {
-            Transform();
             Crop();
+            Transform();
             Read();
             return image;
         }
 
         private void Crop()
         {
-            ImageFactory imageFactory = new ImageFactory();
-            imageFactory.Load(image);
-            imageFactory.EntropyCrop();
-            
-            image = imageFactory.Image;
+            //ImageFactory imageFactory = new ImageFactory();
+            //imageFactory.Load(image);
+            //imageFactory.EntropyCrop();
+            //image = imageFactory.Image;
+
+
+            image = ImageCrop.Crop(image);
+
+
+            image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
+            //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
+            //Display();
+
+
         }
 
         private void Transform()
@@ -44,10 +53,14 @@ namespace TheArtOfDecoding
             ImageFactory imageFactory = new ImageFactory();
             imageFactory.Load(image);
 
-            imageFactory.Brightness(15);
-            imageFactory.Contrast(75);
+            imageFactory.Brightness(5);
+            imageFactory.Contrast(5);
 
             image = imageFactory.Image;
+
+            imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
+            //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
+            //Display();
         }
 
         private void Read()
@@ -89,6 +102,7 @@ namespace TheArtOfDecoding
             colors.Add(DataColors.Orange);
             colors.Add(DataColors.Gray);
             colors.Add(DataColors.Purple);
+            colors.Add(Color.White);
 
 
             Rgb colorrgb = new Rgb { R = color.R, G = color.G, B = color.B };
@@ -103,6 +117,12 @@ namespace TheArtOfDecoding
                 if (deltaE < deltaC)
                 {
                     deltaC = deltaE;
+
+                    if (c.Equals(Color.White))
+                    {
+                        colorToReturn = Color.Transparent;
+                        continue;
+                    }
                     colorToReturn = c == DataColors.Purple ? (Color)DataColors.Blue : c;
                 }
 
@@ -120,7 +140,7 @@ namespace TheArtOfDecoding
 
         private void ImageFromList(List<Color> list)
         {
-            Bitmap img = new Bitmap(pixelsPerRow, ((int)((double)list.Count / pixelsPerRow) + 1));
+            Bitmap img = new Bitmap(pixelsPerRow, ((int)(list.Count / pixelsPerRow)));
 
             int pixel = 0;
             for (int y = 0; y < img.Height; y++)
