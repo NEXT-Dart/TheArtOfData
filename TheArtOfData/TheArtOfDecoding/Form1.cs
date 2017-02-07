@@ -28,6 +28,7 @@ namespace TheArtOfDecoding
             tbFile.Text = open.FileName;
             ImageParser ip = new ImageParser(open.FileName);
             Image img = ip.Run();
+            pbImage.Image = img;
         }
     }
 }
