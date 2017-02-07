@@ -9,9 +9,14 @@ namespace TheArtOfDecoding
 {
     class ImageParser
     {
+        public Image image { get; private set; }
         public ImageParser(string filename)
         {
-
+            if(!filename.EndsWith(".jpg"))
+            {
+                throw new ArgumentException("Input files can only be .jpg format");
+            }
+            image = Image.FromFile(filename);
         }
 
         public Image Run()
@@ -19,22 +24,19 @@ namespace TheArtOfDecoding
             return null;
         }
 
-        private Image Crop(Image i)
+        private void Crop()
         {
 
-            return null;
         }
 
-        private Image Transform(Image i)
+        private void Transform()
         {
 
-            return null;
         }
 
-        private Image Read(Image i)
+        private void Read()
         {
 
-            return null;
         }
     }
 }
