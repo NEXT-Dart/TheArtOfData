@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TheArtOfData.Art;
 
 namespace TheArtOfData
 {
@@ -33,6 +34,7 @@ namespace TheArtOfData
 
         private DateTime currentImageTimestamp;
         private object __timestampLock;
+        private Dictionary<Type, Control> controls;
 
         public Form1()
         {
@@ -42,6 +44,10 @@ namespace TheArtOfData
             __timestampLock = new object();
 
             //new Input().Show();
+
+            controls = new Dictionary<Type, Control>();
+            controls.Add(typeof(ImageDataWriter), pictureBox1);
+            controls.Add(typeof(MondriaanArtGenerator), pictureBox2);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -69,7 +75,7 @@ namespace TheArtOfData
 
         public void RedrawImage(int colorsPerRow, byte[] data)
         {
-            ImageResult ir = new ImageResult(data, colorsPerRow);
+            ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator));
             ThreadPool.QueueUserWorkItem(ExecuteThread, ir);
         }
 
@@ -82,10 +88,16 @@ namespace TheArtOfData
             {
                 if (ir.TimeStamp > currentImageTimestamp)
                 {
-                    PropertyInfo pi = pictureBox1.GetType().GetProperty("Image");
-                    pi.SetValue(pictureBox1, ir.Image);
+                    foreach (KeyValuePair<Type, Control> kvp in controls)
+                    {
+                        PropertyInfo pi = kvp.Value.GetType().GetProperty("Image");
+                        Image img;
+                        ir.Image.TryGetValue(kvp.Key, out img);
+                        pi.SetValue(kvp.Value, img);
+                    }
+
                     currentImageTimestamp = ir.TimeStamp;
-                } 
+                }
             }
         }
 
