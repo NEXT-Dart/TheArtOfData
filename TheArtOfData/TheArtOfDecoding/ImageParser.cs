@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageProcessor;
 
 namespace TheArtOfDecoding
 {
@@ -21,6 +22,9 @@ namespace TheArtOfDecoding
 
         public Image Run()
         {
+            Crop();
+            Transform();
+            Read();
             return null;
         }
 
