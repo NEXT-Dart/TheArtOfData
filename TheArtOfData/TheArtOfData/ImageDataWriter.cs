@@ -97,8 +97,8 @@ namespace TheArtOfData
             // remove margin: 2200 X 3300 pixels
             //const int documentWidth = 700;
             //const int documentHeight = 1025;
-            const int documentWidth = 300;
-            const int documentHeight = 430;
+            const int documentWidth = 300 * 2;
+            const int documentHeight = 430 * 2;
             int colorSize = documentWidth / colorsPerRow;
             Bitmap bitmap = new Bitmap(documentWidth + 100, documentHeight + 10);
 
