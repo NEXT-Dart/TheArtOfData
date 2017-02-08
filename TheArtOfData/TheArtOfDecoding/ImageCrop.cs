@@ -55,7 +55,9 @@ namespace TheArtOfDecoding
                         int avg = (r + b + g) / 3;
                         if (r <= avg + marge && r >= avg - marge &&
                             g <= avg + marge && g >= avg - marge &&
-                            b <= avg + marge && b >= avg - marge)
+                            b <= avg + marge && b >= avg - marge &&
+                            !(r <= marge && g <= marge && b <= marge)) //&&
+                            //!(r <= 128 + marge && r >= 128 - marge && g <= 128 + marge && g >= 128 - marge && b <= 128 + marge && b >= 128 - marge))
                             avg = 255;
                         else
                             avg = 0;
