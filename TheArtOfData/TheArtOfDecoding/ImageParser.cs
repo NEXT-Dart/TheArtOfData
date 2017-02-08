@@ -28,12 +28,19 @@ namespace TheArtOfDecoding
 
         public Image Run()
         {
-            Crop();
-            ChangeBrightnessAndContrast();
-            //Straighten();
-            //pixelsPerRow = GetPixelsFromImage(image);
-            Read();
-            return image;
+            try
+            {
+                Crop();
+                ChangeBrightnessAndContrast();
+                //Straighten();
+                //pixelsPerRow = GetPixelsFromImage(image);
+                Read();
+                return image;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private int GetPixelsFromImage(Image image)

@@ -138,7 +138,7 @@ namespace TheArtOfDecoding
 
         private void captureTimer_Tick(object sender, EventArgs e)
         {
-            if (_frameSource == null)
+            if (_frameSource == null || _latestFrame == null)
                 return;
 
             new Thread(parseImage).Start();
@@ -150,6 +150,9 @@ namespace TheArtOfDecoding
             ImageParser ip = new ImageParser(current);
             Image img = ip.Run();
             current.Dispose();
+
+            if (img == null)
+                return;
 
 
             ImageDataReader idr = new ImageDataReader(img);
