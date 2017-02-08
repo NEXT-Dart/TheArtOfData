@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TheArtOfData.Art
 {
@@ -11,9 +12,10 @@ namespace TheArtOfData.Art
     {
         #region "Fields"
 
-        private int[,] colors;
+        private int[] colors;
         private int size;
         private Random rand;
+        private List<LineData> lines;
 
         #endregion
 
@@ -21,16 +23,23 @@ namespace TheArtOfData.Art
 
         public ImageGrid(int size, Random rand)
         {
-            colors = new int[size, size];
+            colors = new int[size * size];
             this.size = size;
             this.rand = rand;
+            lines = new List<LineData>();
         }
 
         #endregion
 
         #region "Properties"
 
-
+        public LineData[] Lines
+        {
+            get
+            {
+                return lines.OrderByDescending(x => x.IsHorizontal).ThenBy(h => h.IsHorizontal ? h.Start.Y : h.Start.X).ToArray();
+            }
+        }
 
         #endregion
 
@@ -46,10 +55,12 @@ namespace TheArtOfData.Art
 
             int start = length == size ? 0 : (size / 2 - length / 2 - rand.Next(0, (size - length) / 2));
 
-            for (int i = start; i < length; i++)
+            for (int i = start; i < start + length; i++)
             {
-                colors[i, row] = 1;
+                colors[i * size + row] = 1;
             }
+
+            lines.Add(new LineData(new Point(start, row), new Point(start + length, row)));
         }
 
         public void SetColumn(int col)
@@ -62,19 +73,17 @@ namespace TheArtOfData.Art
 
             int start = length == size ? 0 : (size / 2 - length / 2 - rand.Next(0, (size - length) / 2));
 
-            for (int i = start; i < length; i++)
+            for (int i = start; i < start + length; i++)
             {
-                colors[col, i] = 1;
+                colors[col * size + i] = 1;
             }
+
+            lines.Add(new LineData(new Point(col, start), new Point(col, start + length)));
         }
 
-        public bool SetPoint(int x, int y, int val)
+        public void SetPoint(int x, int y, int val)
         {
-            if (colors[x, y] == 1)
-                colors[x, y] = val;
-            else
-                return false;
-            return true;
+            colors[x * size + y] = val + 2;
         }
 
         public Image CreateBitmap(int s)
@@ -87,15 +96,15 @@ namespace TheArtOfData.Art
             {
                 for (int y = 0; y < this.size; y++)
                 {
-                    Color c = Color.White;
+                    Color c = Color.Green;
 
-                    if (colors[x, y] == 0)
+                    if (colors[x * this.size + y] == 0)
                         continue;
-                    else if (colors[x, y] == 1)
+                    else if (colors[x * this.size + y] == 1)
                         c = Color.Gold;
-                    else if (colors[x, y] == 2)
+                    else if (colors[x * this.size + y] == 2)
                         c = Color.Maroon;
-                    else if (colors[x, y] == 3)
+                    else if (colors[x * this.size + y] == 3)
                         c = Color.Blue;
 
                     for (int i = 0; i < size; i++)
@@ -110,6 +119,36 @@ namespace TheArtOfData.Art
             }
 
             return bitmap;
+        }
+
+        public void CheckCollisions()
+        {
+            // Get all yellow points
+            List<Point> yellows = new List<Point>();
+            for (int i = 0; i < colors.Length; i++)
+            {
+                if (colors[i] == 1)
+                {
+                    yellows.Add(new Point(i / size, i % size));
+                }
+            }
+
+            // Check all the surrounding pixels
+            foreach (Point yellow in yellows)
+            {
+                Point[] surrounding = yellows.Where(x => x.X >= yellow.X - 1 && x.X <= yellow.X + 1 && x.Y >= yellow.Y - 1 && x.Y <= yellow.Y + 1).ToArray();
+                surrounding = surrounding.Where(x => x != yellow).ToArray();
+
+                if (surrounding.Length >= 3)
+                {
+                    LineData[] lines = this.lines.Where(x => x.Area.Contains(yellow)).ToArray();
+                    foreach (LineData line in lines)
+                    {
+                        line.AddCrossing(yellow);
+                        //colors[yellow.X * size + yellow.Y] += 1;
+                    }
+                }
+            }
         }
 
         #endregion

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TheArtOfData.Art
 {
@@ -22,6 +23,7 @@ namespace TheArtOfData.Art
         public MondriaanArtGenerator()
         {
             data = new List<byte>();
+            currentByte = "";
         }
 
         #endregion
@@ -81,17 +83,31 @@ namespace TheArtOfData.Art
         {
             if (currentByte.Length == 0)
             {
-                currentByte = Convert.ToString(data[0], 2);
+                if (data.Count > 0)
+                {
+                    currentByte = Convert.ToString(data[0], 2);
+                    data.RemoveRange(0, 1);
+                }
                 while (currentByte.Length != 8)
                 {
                     currentByte = "0" + currentByte;
                 }
-                data.RemoveRange(0, 1);
+
             }
 
             string bit = currentByte.Substring(0, 1);
             currentByte = currentByte.Remove(0, 1);
             return bit;
+        }
+
+        private string GetBits(int amount)
+        {
+            string bits = "";
+            for (int i = 0; i < amount; i++)
+            {
+                bits += GetNextBit();
+            }
+            return bits;
         }
 
         #endregion
@@ -114,14 +130,16 @@ namespace TheArtOfData.Art
             if (data.Count == 0)
                 return new Bitmap(1, 1);
 
+            // Create the bits on the image grid
+            int totalBitCount = data.Count * 8;
             const int size = 1000;
-            const int imgSize = 80;
+            int imgSize = 10 + (int)(totalBitCount * 0.5);
 
-            rand = new Random(0);
+            rand = new Random(data[0]);
 
             // Get the rows and columns to color yellow
-            int[] rows = GetRandomNumbers((int)(imgSize * 0.2), 0, imgSize);
-            int[] columns = GetRandomNumbers((int)(imgSize * 0.2), 0, imgSize);
+            int[] rows = GetRandomNumbers((int)(imgSize * 0.15), 0, imgSize);
+            int[] columns = GetRandomNumbers((int)(imgSize * 0.15), 0, imgSize);
 
             // Create the image grid
             ImageGrid ig = new ImageGrid(imgSize, rand);
@@ -135,11 +153,32 @@ namespace TheArtOfData.Art
                 ig.SetColumn(col);
             }
 
-            // Create the bits on the image grid
-            int totalBitCount = data.Count * 8;
+            ig.CheckCollisions();
+            LineData[] lines = ig.Lines;
 
+            // Get the total amount of bits
+            int totalLineBits = 0;
+            foreach (LineData line in lines)
+            {
+                totalLineBits += line.Area.Length / 2;
+            }
+
+            // Give each line an amount of bits
+            foreach (LineData line in lines)
+            {
+                int length = line.Area.Length / 2;
+                float percentage = 1f / (float)totalLineBits * length;
+                line.SetBitsOnLine(ig, GetBits(Ceil((float)totalBitCount * percentage)));
+            }
 
             return ig.CreateBitmap(size);
+        }
+
+        private int Ceil(float value)
+        {
+            if (value % 1 == 0)
+                return (int)value;
+            return (int)(value + 1);
         }
 
         #endregion
