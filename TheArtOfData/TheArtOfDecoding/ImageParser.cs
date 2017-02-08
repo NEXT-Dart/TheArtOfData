@@ -26,7 +26,7 @@ namespace TheArtOfDecoding
             Crop();
             ChangeBrightnessAndContrast();
             //Straighten();
-            //pixelsPerRow = GetPixelsFromImage(image);
+            pixelsPerRow = GetPixelsFromImage(image);
             Read();
             return image;
         }
@@ -38,8 +38,8 @@ namespace TheArtOfDecoding
             for (int i = 0; i < image.Width; i++)
             {
                 List<Color> pixels = new List<Color>();
-                int x = 1;
-                int y = x;
+                int x = 0;
+                int y = 25;
 
 
                 while (true)
@@ -52,34 +52,36 @@ namespace TheArtOfDecoding
                     }
                 }
 
-                int currentPixelsFromPixelInImage = 0;
-                int minimalPixelsFromPixelInImage = 999999;
+                Color previousC = Color.Transparent;
+                int minimalSameColorsPerPixel = 0;
+                int currentMinimalColorsPerPixal = 999999;
 
-                Color tempC = Color.White;
                 foreach (Color c in pixels)
                 {
-                    //change current to minimal or something
-                    if (c.Equals(tempC))
+                    if (c.Equals(previousC))
                     {
-                        currentPixelsFromPixelInImage++;
+                        minimalSameColorsPerPixel++;
                     }
                     else
                     {
-                        if(currentPixelsFromPixelInImage < minimalPixelsFromPixelInImage)
+                        if (minimalSameColorsPerPixel > 20 && minimalSameColorsPerPixel < currentMinimalColorsPerPixal)
                         {
-                            minimalPixelsFromPixelInImage = currentPixelsFromPixelInImage;
+                            currentMinimalColorsPerPixal = minimalSameColorsPerPixel;
                         }
+                        minimalSameColorsPerPixel = 0;
+
                     }
 
-                    tempC = c;
+                    previousC = c;
                 }
 
+                //width = width - amount of transparent pixels in pixel list
 
-                return bmp.Width / minimalPixelsFromPixelInImage;
+                return bmp.Width / currentMinimalColorsPerPixal;
             }
 
             //go from top to bottom. Check most common heigth
-            return 0;
+            return 10;
         }
 
         private void Crop()
