@@ -98,7 +98,7 @@ namespace TheArtOfData
             //const int documentWidth = 700;
             //const int documentHeight = 1025;
             const int documentWidth = 300;
-            const int documentHeight = 300;
+            const int documentHeight = 430;
             int colorSize = documentWidth / colorsPerRow;
             Bitmap bitmap = new Bitmap(documentWidth + 100, documentHeight + 10);
 
