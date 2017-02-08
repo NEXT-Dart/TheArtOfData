@@ -94,6 +94,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebCamLib\WebCamLib.vcxproj">
+      <Project>{fd48314a-9615-4ba6-913a-03787fb2dd30}</Project>
+      <Name>WebCamLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebCamWrapper\WebCamWrapper.csproj">
+      <Project>{cc5d5149-0092-4508-ac34-2abe1468a1c9}</Project>
+      <Name>WebCamWrapper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
