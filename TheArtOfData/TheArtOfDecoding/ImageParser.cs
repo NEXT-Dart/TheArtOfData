@@ -21,6 +21,11 @@ namespace TheArtOfDecoding
             image = Image.FromFile(filename);
         }
 
+        public ImageParser(Image image)
+        {
+            this.image = image;
+        }
+
         public Image Run()
         {
             Crop();
