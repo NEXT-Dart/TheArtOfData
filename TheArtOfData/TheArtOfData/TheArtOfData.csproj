@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Art\ArtGenerator.cs" />
     <Compile Include="Art\ImageGrid.cs" />
+    <Compile Include="Art\LineData.cs" />
     <Compile Include="Art\MondriaanArtGenerator.cs" />
     <Compile Include="DataColors.cs" />
     <Compile Include="Form1.cs">
