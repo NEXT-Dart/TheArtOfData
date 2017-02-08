@@ -34,6 +34,7 @@ namespace TheArtOfData
 
         private DateTime currentImageTimestamp;
         private object __timestampLock;
+        private Thread _thread;
         private Dictionary<Type, Control> controls;
 
         public Form1()
@@ -48,6 +49,7 @@ namespace TheArtOfData
             controls = new Dictionary<Type, Control>();
             controls.Add(typeof(ImageDataWriter), pictureBox1);
             controls.Add(typeof(MondriaanArtGenerator), pictureBox2);
+            controls.Add(typeof(MosaicArtGenerator), pictureBox3);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -75,8 +77,12 @@ namespace TheArtOfData
 
         public void RedrawImage(int colorsPerRow, byte[] data)
         {
-            ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator));
-            ThreadPool.QueueUserWorkItem(ExecuteThread, ir);
+            ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator), typeof(MosaicArtGenerator));
+            //ThreadPool.QueueUserWorkItem(ExecuteThread, ir);
+            if (_thread != null && _thread.IsAlive)
+                _thread.Abort();
+            _thread = new Thread(ExecuteThread);
+            _thread.Start(ir);
         }
 
         private void ExecuteThread(object data)
