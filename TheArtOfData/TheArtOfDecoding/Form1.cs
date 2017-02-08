@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Touchless.Vision.Camera;
@@ -47,8 +49,8 @@ namespace TheArtOfDecoding
             {
                 Camera c = CameraService.AvailableCameras.First(); ;
                 setFrameSource(new CameraFrameSource(c));
-                _frameSource.Camera.CaptureWidth = 640;
-                _frameSource.Camera.CaptureHeight = 480;
+                _frameSource.Camera.CaptureWidth = 480;
+                _frameSource.Camera.CaptureHeight = 320;
                 _frameSource.Camera.Fps = 60;
                 _frameSource.NewFrame += OnImageCaptured;
 
@@ -139,15 +141,26 @@ namespace TheArtOfDecoding
             if (_frameSource == null)
                 return;
 
+            new Thread(parseImage).Start();
+        }
+
+        private void parseImage()
+        {
             Image current = (Image)_latestFrame.Clone();
             ImageParser ip = new ImageParser(current);
             Image img = ip.Run();
+            current.Dispose();
+
 
             ImageDataReader idr = new ImageDataReader(img);
             byte[] data = idr.GetData();
-            textBox1.Text = Encoding.ASCII.GetString(data);
 
-            current.Dispose();
+
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                textBox1.Text = Encoding.ASCII.GetString(data);
+            });
+            //textBox1.Text = Encoding.ASCII.GetString(data);
         }
     }
 }

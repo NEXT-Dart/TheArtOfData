@@ -51,7 +51,7 @@ namespace TheArtOfDecoding
                         int g = ptr[(x * 3) + y * stride + 1];
                         int r = ptr[(x * 3) + y * stride + 2];
 
-                        const int marge = 50;
+                        const int marge = 35;
                         int avg = (r + b + g) / 3;
                         if (r <= avg + marge && r >= avg - marge &&
                             g <= avg + marge && g >= avg - marge &&

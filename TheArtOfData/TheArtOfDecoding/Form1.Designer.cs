@@ -129,7 +129,7 @@
             // 
             // captureTimer
             // 
-            this.captureTimer.Interval = 1000;
+            this.captureTimer.Interval = 500;
             this.captureTimer.Tick += new System.EventHandler(this.captureTimer_Tick);
             // 
             // Form1
