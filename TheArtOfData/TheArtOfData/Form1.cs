@@ -102,6 +102,11 @@ namespace TheArtOfData
                         pi.SetValue(kvp.Value, img);
                     }
 
+                    PropertyInfo popOutPic = PopOut.INSTANCE.pictureBox1.GetType().GetProperty("Image");
+                    Image pop;
+                    ir.Image.TryGetValue(typeof(ImageDataWriter), out pop);
+                    popOutPic.SetValue(PopOut.INSTANCE.pictureBox1, pop);
+
                     currentImageTimestamp = ir.TimeStamp;
                 }
             }
@@ -133,6 +138,11 @@ namespace TheArtOfData
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             RedrawImage((int)numericUpDown1.Value, Encoding.ASCII.GetBytes(textBox1.Text));
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            PopOut.INSTANCE.Show();
         }
     }
 }
