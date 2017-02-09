@@ -44,6 +44,7 @@ namespace TheArtOfDecoding
             _latestFrame = bitmap;
             //pictureBox1.Image = bitmap;
             pictureBox1.Invalidate();
+            pictureBox2.Invalidate();
         }
 
 
@@ -98,23 +99,10 @@ namespace TheArtOfDecoding
         {
             if (_latestFrame != null)
             {
-                Image interlaced;
-                if (checkBox1.Checked)
-                {
-                    // Draw the latest image from the active camera
-                    interlaced = InterlaceData.INSTANCE.DrawInterlace(_latestFrame);
-                }
-                else
-                {
-                    interlaced = _latestFrame;
-                }
-
-                //e.Graphics.DrawImage(interlaced, 0, 0, interlaced.Width, interlaced.Height);
-
                 // Calculate the height of image
-                float imageH = (float)pictureBox1.Width / (float)interlaced.Width;
+                float imageH = (float)pictureBox1.Width / (float)_latestFrame.Width;
 
-                e.Graphics.DrawImage(interlaced, new Rectangle(0, 0, pictureBox1.Width, (int)(interlaced.Height * imageH)), 0, 0, interlaced.Width, interlaced.Height, GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(_latestFrame, new Rectangle(0, 0, pictureBox1.Width, (int)(_latestFrame.Height * imageH)), 0, 0, _latestFrame.Width, _latestFrame.Height, GraphicsUnit.Pixel);
             }
         }
 
@@ -122,6 +110,7 @@ namespace TheArtOfDecoding
         {
             _latestFrame = frame.Image;
             pictureBox1.Invalidate();
+            pictureBox2.Invalidate();
         }
 
         private void btnCameraConfig_Click(object sender, EventArgs e)
@@ -177,13 +166,55 @@ namespace TheArtOfDecoding
             ImageDataReader idr = new ImageDataReader(img);
             byte[] data = idr.GetData();
 
-
-            this.Invoke((MethodInvoker)delegate ()
-            {
-                if (!textBox1.IsDisposed)
-                    textBox1.Text = Encoding.ASCII.GetString(data);
-            });
+            if (this != null && !this.IsDisposed)
+                this.Invoke((MethodInvoker)delegate ()
+                {
+                    if (!textBox1.IsDisposed)
+                        textBox1.Text = Encoding.ASCII.GetString(data);
+                });
             //textBox1.Text = Encoding.ASCII.GetString(data);
+        }
+
+        private void pictureBox2_Paint(object sender, PaintEventArgs e)
+        {
+            if (_latestFrame != null)
+            {
+                Image interlaced;
+                if (checkBox1.Checked)
+                {
+                    // Draw the latest image from the active camera
+                    interlaced = InterlaceData.INSTANCE.DrawInterlace(_latestFrame);
+                }
+                else
+                {
+                    interlaced = _latestFrame;
+                }
+
+                //e.Graphics.DrawImage(interlaced, 0, 0, interlaced.Width, interlaced.Height);
+
+                // Calculate the height of image
+                int width = interlaced.Width;
+                int height = interlaced.Height;
+                if (width > height)
+                {
+                    width = pictureBox2.Width;
+                    height = (int)((float)interlaced.Height * ((float)pictureBox2.Width / (float)interlaced.Width));
+                }
+
+                if (height > width || height > pictureBox2.Height)
+                {
+                    height = pictureBox2.Height;
+                    width = (int)((float)interlaced.Width * ((float)pictureBox2.Height / (float)interlaced.Height));
+                }
+
+
+                e.Graphics.DrawImage(interlaced, new Rectangle(0, 0, width, height), 0, 0, interlaced.Width, interlaced.Height, GraphicsUnit.Pixel);
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            pictureBox2.Visible = checkBox1.Checked;
         }
     }
 }

@@ -120,6 +120,7 @@ namespace TheArtOfDecoding
         {
             InterlaceData.INSTANCE.StartPosition = new Point(left, top);
             InterlaceData.INSTANCE.TotalImageWidth = image.Width - left - right;
+            InterlaceData.INSTANCE.CropInfo = new Rectangle(left, top, image.Width - left - right, image.Height - top - bottom);
             Bitmap bmpImage = new Bitmap(image);
             return bmpImage.Clone(new Rectangle(left, top, image.Width - left - right, image.Height - top - bottom), bmpImage.PixelFormat);
         }

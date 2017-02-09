@@ -33,7 +33,7 @@ namespace TheArtOfDecoding
                 Crop();
                 ChangeBrightnessAndContrast();
                 //Straighten();
-                pixelsPerRow = GetPixelsFromImage(image);
+                //pixelsPerRow = GetPixelsFromImage(image);
                 InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
                 Read();
                 return image;
@@ -48,33 +48,55 @@ namespace TheArtOfDecoding
         {
             Bitmap bitmap = new Bitmap(image);
 
+            // Get the pixel width from left to right
+            int pixelWidth = GetPixelWidth(new Point(0, 20), new Point(1, 0), bitmap);
+            // Get the pixel width from top to bottom
+            int pixelHeight = GetPixelWidth(new Point(20, 0), new Point(0, 1), bitmap);
+
+            int pixelSize = (pixelWidth + pixelHeight) / 2;
+
+            // Get the pixel width from left to right
+            pixelWidth = GetPixelWidth(new Point(0, pixelSize), new Point(1, 0), bitmap);
+            // Get the pixel width from top to bottom
+            pixelHeight = GetPixelWidth(new Point(pixelSize, 0), new Point(0, 1), bitmap);
+
+            pixelSize = (pixelWidth + pixelHeight) / 2;
+
+            return (int)Math.Round((double)image.Width / pixelSize);
+        }
+
+        private int GetPixelWidth(Point start, Point direction, Bitmap bitmap)
+        {
             List<int> runningMedian = new List<int>();
 
-            // Plot a surface profile from left to right
-            List<int> LTR = new List<int>();
-            int height = 50;
+            // Plot a surface profile
+            List<int> surface = new List<int>();
+
+            Point nextPoint = start;
             int lastValue = -1;
-            for (int i = 0; i < bitmap.Width; i++)
+            while (nextPoint.X < bitmap.Width && nextPoint.Y < bitmap.Height)
             {
-                Color c = bitmap.GetPixel(i, height);
+                Color c = bitmap.GetPixel(nextPoint.X, nextPoint.Y);
                 runningMedian.Add(lastValue - (c.R + c.G + c.B));
                 lastValue = (c.R + c.G + c.B);
 
                 if (runningMedian.Count > 10)
                 {
                     runningMedian.RemoveAt(0);
-                    LTR.Add((int)runningMedian.Average());
+                    surface.Add((int)runningMedian.Average());
                 }
+
+                nextPoint = new Point(nextPoint.X + direction.X, nextPoint.Y + direction.Y);
             }
 
             // Find the extremes
             Dictionary<int, int> extremes = new Dictionary<int, int>();
-            for (int i = 0; i < LTR.Count; i++)
+            for (int i = 0; i < surface.Count; i++)
             {
-                if (LTR[i] > 5 || LTR[i] < -5)
+                if (surface[i] > 5 || surface[i] < -5)
                 {
-                    extremes.Add(i, LTR[i]);
-                    while (i < LTR.Count && LTR[i] != 0)
+                    extremes.Add(i, surface[i]);
+                    while (i < surface.Count && surface[i] != 0)
                     {
                         i++;
                     }
@@ -92,15 +114,10 @@ namespace TheArtOfDecoding
             {
                 differences.Add(indexes[i] - indexes[i - 1]);
             }
-            differences.Add(LTR.Count - indexes[indexes.Length - 1]);
+            if (indexes.Length > 0)
+                differences.Add(surface.Count - indexes[indexes.Length - 1]);
 
-            int pixelWidth = Median(differences);
-
-            string[] lines = differences.Select(x => x.ToString()).ToArray();
-            File.WriteAllLines(@"D:\Users\Bas\Desktop\Knipsel.txt", lines);
-
-            //go from top to bottom. Check most common heigth
-            return (int)Math.Round((double)image.Width / pixelWidth);
+            return Median(differences);
         }
 
         private int Median(List<int> range)
@@ -124,7 +141,7 @@ namespace TheArtOfDecoding
             image = ImageCrop.Crop(image);
 
 
-            image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
+            //image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
             //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
             //Display();
 
@@ -142,7 +159,7 @@ namespace TheArtOfDecoding
 
             image = imageFactory.Image;
 
-            imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
+            //imageFactory.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
             //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "resize.bmp"));
             //Display();
         }
@@ -239,7 +256,7 @@ namespace TheArtOfDecoding
             }
 
             image = img;
-            image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "i.bmp"));
+            //image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "i.bmp"));
         }
 
         private void Display(Image i)

@@ -16,6 +16,7 @@ namespace TheArtOfDecoding
         public int TotalImageWidth;
         public int PixelWidth;
         public List<DataColors> Colors;
+        public Rectangle CropInfo;
 
         #endregion
 
@@ -26,6 +27,7 @@ namespace TheArtOfDecoding
             StartPosition = new Point(0, 0);
             PixelWidth = 50;
             PixelsPerRow = 10;
+            CropInfo = new Rectangle(0, 0, 1, 1);
             Colors = new List<DataColors>();
         }
 
@@ -57,7 +59,11 @@ namespace TheArtOfDecoding
 
         public Image DrawInterlace(Image source)
         {
-            Graphics g = Graphics.FromImage(source);
+            Bitmap bitmap = new Bitmap(source);
+            Bitmap cropped = new Bitmap(CropInfo.Width, CropInfo.Height);
+            Graphics g = Graphics.FromImage(cropped);
+
+            g.DrawImage(bitmap, 0, 0, CropInfo, GraphicsUnit.Pixel);
 
             // Calculate the pixel width
             const int scaleDeforming = 10;
@@ -65,25 +71,34 @@ namespace TheArtOfDecoding
 
             int x = 0;
             int y = 0;
-            for (int i = 0; i < Colors.Count; i++)
+            lock (Colors)
             {
-                if (Colors[i] == -1)
-                    continue;
-
-                Brush brush = new SolidBrush(Colors[i]);
-                Pen pen = new Pen(Color.White, 3);
-                //g.FillRectangle(brush, StartPosition.X + scaleDeforming / 2 + x * PixelWidth, StartPosition.Y + scaleDeforming / 2 + y * PixelWidth, PixelWidth - scaleDeforming, PixelWidth - scaleDeforming);
-                g.DrawRectangle(pen, StartPosition.X + scaleDeforming / 2 + x * PixelWidth, StartPosition.Y + scaleDeforming / 2 + y * PixelWidth, PixelWidth - scaleDeforming, PixelWidth - scaleDeforming);
-
-                x++;
-                if (x == PixelsPerRow)
+                for (int i = 0; i < Colors.Count; i++)
                 {
-                    x = 0;
-                    y++;
+                    if (i > Colors.Count)
+                        break;
+
+                    if (Colors[i] == -1)
+                        continue;
+
+                    Brush brush = new SolidBrush(Colors[i]);
+                    Pen pen = new Pen(Color.White, 3);
+                    //g.FillRectangle(brush, StartPosition.X + scaleDeforming / 2 + x * PixelWidth, StartPosition.Y + scaleDeforming / 2 + y * PixelWidth, PixelWidth - scaleDeforming, PixelWidth - scaleDeforming);
+                    //g.DrawRectangle(pen, StartPosition.X + scaleDeforming / 2 + x * PixelWidth, StartPosition.Y + scaleDeforming / 2 + y * PixelWidth, PixelWidth - scaleDeforming, PixelWidth - scaleDeforming);
+                    g.DrawRectangle(pen, scaleDeforming / 2 + x * PixelWidth, scaleDeforming / 2 + y * PixelWidth, PixelWidth - scaleDeforming, PixelWidth - scaleDeforming);
+
+                    x++;
+                    if (x == PixelsPerRow)
+                    {
+                        x = 0;
+                        y++;
+                    }
                 }
             }
 
-            return source;
+
+
+            return cropped;
         }
 
         #endregion

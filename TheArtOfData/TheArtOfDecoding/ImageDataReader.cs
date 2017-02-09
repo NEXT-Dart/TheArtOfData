@@ -38,13 +38,15 @@ namespace TheArtOfDecoding
 
         public byte[] GetData()
         {
-            InterlaceData.INSTANCE.Colors.Clear();
+            lock (InterlaceData.INSTANCE.Colors)
+                InterlaceData.INSTANCE.Colors.Clear();
             for (int j = 0; j < img.Height; j++)
             {
                 for (int i = 0; i < img.Width; i++)
                 {
                     DataColors dc = img.GetPixel(i, j);
-                    InterlaceData.INSTANCE.Colors.Add(dc);
+                    lock (InterlaceData.INSTANCE.Colors)
+                        InterlaceData.INSTANCE.Colors.Add(dc);
                     if (dc == -1)
                         continue;
                     string bits = Convert.ToString(dc, 2);
