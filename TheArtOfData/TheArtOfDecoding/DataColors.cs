@@ -69,6 +69,8 @@ namespace TheArtOfDecoding
 
         public static implicit operator Color(DataColors dc)
         {
+            if (dc == null)
+                return Color.White;
             switch (dc.value)
             {
                 case 0:
@@ -125,6 +127,8 @@ namespace TheArtOfDecoding
 
         public static implicit operator int(DataColors dc)
         {
+            if (dc == null)
+                return -1;
             return dc.value;
         }
 

@@ -33,7 +33,8 @@ namespace TheArtOfDecoding
                 Crop();
                 ChangeBrightnessAndContrast();
                 //Straighten();
-                //pixelsPerRow = GetPixelsFromImage(image);
+                pixelsPerRow = GetPixelsFromImage(image);
+                InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
                 Read();
                 return image;
             }
@@ -45,55 +46,71 @@ namespace TheArtOfDecoding
 
         private int GetPixelsFromImage(Image image)
         {
-            Bitmap bmp = new Bitmap(image);
-            //go from left to right. Check most common width.
-            for (int i = 0; i < image.Width; i++)
+            Bitmap bitmap = new Bitmap(image);
+
+            List<int> runningMedian = new List<int>();
+
+            // Plot a surface profile from left to right
+            List<int> LTR = new List<int>();
+            int height = 50;
+            int lastValue = -1;
+            for (int i = 0; i < bitmap.Width; i++)
             {
-                List<Color> pixels = new List<Color>();
-                int x = 0;
-                int y = 25;
+                Color c = bitmap.GetPixel(i, height);
+                runningMedian.Add(lastValue - (c.R + c.G + c.B));
+                lastValue = (c.R + c.G + c.B);
 
-
-                while (true)
+                if (runningMedian.Count > 10)
                 {
-                    pixels.Add(correctColor(bmp.GetPixel(x, y)));
-                    x++;
-                    if (x >= bmp.Width)
-                    {
-                        break;
-                    }
+                    runningMedian.RemoveAt(0);
+                    LTR.Add((int)runningMedian.Average());
                 }
-
-                Color previousC = Color.Transparent;
-                int minimalSameColorsPerPixel = 0;
-                int currentMinimalColorsPerPixal = 999999;
-
-                foreach (Color c in pixels)
-                {
-                    if (c.Equals(previousC))
-                    {
-                        minimalSameColorsPerPixel++;
-                    }
-                    else
-                    {
-                        if (minimalSameColorsPerPixel > 20 && minimalSameColorsPerPixel < currentMinimalColorsPerPixal)
-                        {
-                            currentMinimalColorsPerPixal = minimalSameColorsPerPixel;
-                        }
-                        minimalSameColorsPerPixel = 0;
-
-                    }
-
-                    previousC = c;
-                }
-
-                //width = width - amount of transparent pixels in pixel list
-
-                return bmp.Width / currentMinimalColorsPerPixal;
             }
 
+            // Find the extremes
+            Dictionary<int, int> extremes = new Dictionary<int, int>();
+            for (int i = 0; i < LTR.Count; i++)
+            {
+                if (LTR[i] > 5 || LTR[i] < -5)
+                {
+                    extremes.Add(i, LTR[i]);
+                    while (i < LTR.Count && LTR[i] != 0)
+                    {
+                        i++;
+                    }
+                }
+            }
+
+            // Get the indexes
+            int[] indexes = extremes.Select(x => x.Key).ToArray();
+
+            // Calculate the differences between each color
+            List<int> differences = new List<int>();
+            if (indexes.Length > 0)
+                differences.Add(indexes[0]);
+            for (int i = 1; i < indexes.Length; i++)
+            {
+                differences.Add(indexes[i] - indexes[i - 1]);
+            }
+            differences.Add(LTR.Count - indexes[indexes.Length - 1]);
+
+            int pixelWidth = Median(differences);
+
+            string[] lines = differences.Select(x => x.ToString()).ToArray();
+            File.WriteAllLines(@"D:\Users\Bas\Desktop\Knipsel.txt", lines);
+
             //go from top to bottom. Check most common heigth
-            return 10;
+            return (int)Math.Round((double)image.Width / pixelWidth);
+        }
+
+        private int Median(List<int> range)
+        {
+            range.Sort();
+            int mid = range.Count / 2;
+            if (range.Count % 2 == 0)
+                return range[mid];
+            else
+                return (range[mid] + range[mid + 1]) / 2;
         }
 
         private void Crop()
@@ -144,7 +161,7 @@ namespace TheArtOfDecoding
                 pixels.Add(correctColor(bmp.GetPixel(x, y)));
                 x += step;
                 steps++;
-                if (steps > 9)
+                if (steps > pixelsPerRow - 1)
                 {
                     y += step;
                     x = step / 2;
