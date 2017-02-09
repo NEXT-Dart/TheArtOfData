@@ -35,15 +35,7 @@ namespace TheArtOfData
 
         private void PopOut_Resize(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Maximized)
-            {
-                TopMost = true;
-                FormBorderStyle = FormBorderStyle.None;
-                WindowState = FormWindowState.Normal;
-                Screen screen = Screen.FromControl(this);
-                Size = screen.Bounds.Size;
-                Location = new Point(0, 0);
-            }
+            Padding = new Padding(Width / 3, 200, Width / 3, 200);
         }
 
         private void PopOut_FormClosing(object sender, FormClosingEventArgs e)
