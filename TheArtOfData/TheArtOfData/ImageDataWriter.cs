@@ -134,7 +134,7 @@ namespace TheArtOfData
             return TrimBitmap(bitmap);
         }
 
-        static Bitmap TrimBitmap(Bitmap source)
+        public static Bitmap TrimBitmap(Bitmap source)
         {
             Rectangle srcRect = default(Rectangle);
             BitmapData data = null;

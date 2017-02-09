@@ -132,7 +132,7 @@ namespace TheArtOfData.Art
 
             // Create the bits on the image grid
             int totalBitCount = data.Count * 8;
-            const int size = 1000;
+            const int size = 500;
             int imgSize = 10 + (int)(totalBitCount * 0.5);
 
             rand = new Random(data[0]);
