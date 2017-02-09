@@ -39,7 +39,11 @@ namespace TheArtOfDecoding
             byte[] data = idr.GetData();
             textBox1.Text = Encoding.ASCII.GetString(data);
 
-            pictureBox1.Image = new Bitmap(open.FileName);
+            pictureBox1.Paint += new PaintEventHandler(drawLatestImage);
+            Bitmap bitmap = new Bitmap(open.FileName);
+            _latestFrame = bitmap;
+            //pictureBox1.Image = bitmap;
+            pictureBox1.Invalidate();
         }
 
 
@@ -94,8 +98,23 @@ namespace TheArtOfDecoding
         {
             if (_latestFrame != null)
             {
-                // Draw the latest image from the active camera
-                e.Graphics.DrawImage(_latestFrame, 0, 0, _latestFrame.Width, _latestFrame.Height);
+                Image interlaced;
+                if (checkBox1.Checked)
+                {
+                    // Draw the latest image from the active camera
+                    interlaced = InterlaceData.INSTANCE.DrawInterlace(_latestFrame);
+                }
+                else
+                {
+                    interlaced = _latestFrame;
+                }
+
+                //e.Graphics.DrawImage(interlaced, 0, 0, interlaced.Width, interlaced.Height);
+
+                // Calculate the height of image
+                float imageH = (float)pictureBox1.Width / (float)interlaced.Width;
+
+                e.Graphics.DrawImage(interlaced, new Rectangle(0, 0, pictureBox1.Width, (int)(interlaced.Height * imageH)), 0, 0, interlaced.Width, interlaced.Height, GraphicsUnit.Pixel);
             }
         }
 
@@ -161,7 +180,8 @@ namespace TheArtOfDecoding
 
             this.Invoke((MethodInvoker)delegate ()
             {
-                textBox1.Text = Encoding.ASCII.GetString(data);
+                if (!textBox1.IsDisposed)
+                    textBox1.Text = Encoding.ASCII.GetString(data);
             });
             //textBox1.Text = Encoding.ASCII.GetString(data);
         }

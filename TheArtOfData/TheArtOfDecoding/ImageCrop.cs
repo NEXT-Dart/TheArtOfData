@@ -118,6 +118,8 @@ namespace TheArtOfDecoding
 
         private Image CutEdges(int top, int bottom, int left, int right)
         {
+            InterlaceData.INSTANCE.StartPosition = new Point(left, top);
+            InterlaceData.INSTANCE.TotalImageWidth = image.Width - left - right;
             Bitmap bmpImage = new Bitmap(image);
             return bmpImage.Clone(new Rectangle(left, top, image.Width - left - right, image.Height - top - bottom), bmpImage.PixelFormat);
         }
@@ -141,6 +143,11 @@ namespace TheArtOfDecoding
         public static Image Crop(Image image)
         {
             return new ImageCrop(image).Crop();
+        }
+
+        public static Image GetBinary(Image image)
+        {
+            return new ImageCrop(image).GetBinaryBitmap();
         }
 
         #endregion

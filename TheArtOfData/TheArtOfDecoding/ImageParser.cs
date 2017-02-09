@@ -33,7 +33,7 @@ namespace TheArtOfDecoding
                 Crop();
                 ChangeBrightnessAndContrast();
                 //Straighten();
-                pixelsPerRow = GetPixelsFromImage(image);
+                //pixelsPerRow = GetPixelsFromImage(image);
                 Read();
                 return image;
             }
