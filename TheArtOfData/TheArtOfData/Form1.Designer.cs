@@ -41,6 +41,7 @@
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             this.panel5 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -48,7 +49,6 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -113,7 +113,7 @@
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(3, 58);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(941, 507);
+            this.pictureBox1.Size = new System.Drawing.Size(474, 507);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -136,7 +136,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(3, 565);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(941, 52);
+            this.panel2.Size = new System.Drawing.Size(474, 52);
             this.panel2.TabIndex = 4;
             // 
             // panel3
@@ -145,15 +145,16 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(3, 3);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(941, 55);
+            this.panel3.Size = new System.Drawing.Size(474, 55);
             this.panel3.TabIndex = 5;
             // 
             // textBox1
             // 
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.Location = new System.Drawing.Point(12, 74);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(260, 506);
+            this.textBox1.Size = new System.Drawing.Size(724, 560);
             this.textBox1.TabIndex = 7;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
@@ -210,14 +211,24 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(287, 646);
+            this.panel4.Size = new System.Drawing.Size(754, 646);
             this.panel4.TabIndex = 6;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(661, 22);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 8;
+            this.button3.Text = "Pop-out";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.Color.Black;
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(287, 0);
+            this.panel5.Location = new System.Drawing.Point(754, 0);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(2, 646);
             this.panel5.TabIndex = 7;
@@ -228,10 +239,10 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(289, 0);
+            this.tabControl1.Location = new System.Drawing.Point(756, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(955, 646);
+            this.tabControl1.Size = new System.Drawing.Size(488, 646);
             this.tabControl1.TabIndex = 8;
             // 
             // tabPage1
@@ -242,7 +253,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(947, 620);
+            this.tabPage1.Size = new System.Drawing.Size(480, 620);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Normal encoding";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -288,16 +299,6 @@
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox3.TabIndex = 1;
             this.pictureBox3.TabStop = false;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(197, 22);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Pop-out";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Form1
             // 

@@ -77,6 +77,8 @@ namespace TheArtOfData.Art
             foreach (char c in bits)
             {
                 index += rand.Next(1, area.Length / (bits.Length));
+                if (index >= area.Length)
+                    index = area.Length - 1;
                 ig.SetPoint(area[index].X, area[index].Y, c - 48);
             }
         }
