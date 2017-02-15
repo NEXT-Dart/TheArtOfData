@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="ImageDataWriter.cs" />
     <Compile Include="ImageResult.cs" />
+    <Compile Include="Imaging\Image.cs" />
     <Compile Include="Input.cs">
       <SubType>Form</SubType>
     </Compile>
