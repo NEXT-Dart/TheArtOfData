@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -54,7 +55,11 @@ namespace TheArtOfData
         {
             idw = new ImageDataWriter();
             idw.AddBytes(data);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             image.Add(typeof(ImageDataWriter), idw.GetImage(colorsPerRow));
+            sw.Stop();
+            Debug.WriteLine(sw.ElapsedMilliseconds);
 
             foreach (Type type in outputTypes)
             {

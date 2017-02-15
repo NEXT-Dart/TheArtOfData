@@ -102,7 +102,8 @@ namespace TheArtOfData
             const int documentWidth = 300 * 2;
             const int documentHeight = 430 * 2;
             int colorSize = documentWidth / colorsPerRow;
-            Bitmap bitmap = new Bitmap(documentWidth + 100, documentHeight + 10);
+            //Bitmap bitmap = new Bitmap(documentWidth + 100, documentHeight + 10);
+            Imaging.CustomImage bitmap = new Imaging.CustomImage(documentWidth + 100, documentHeight + 10);
 
             // Generate the colors onto the bitmap
             int w = 0, h = 0;
@@ -131,7 +132,10 @@ namespace TheArtOfData
 
             }
 
-            return TrimBitmap(bitmap);
+            bitmap.Optimize();
+            bitmap.DrawScale = 1;
+            bitmap.GetDrawableImage().Save(@"D:\Users\Bas\Desktop\output.png");
+            return bitmap;
         }
 
         public static Bitmap TrimBitmap(Bitmap source)

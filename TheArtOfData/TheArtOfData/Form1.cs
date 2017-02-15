@@ -77,7 +77,7 @@ namespace TheArtOfData
 
         public void RedrawImage(int colorsPerRow, byte[] data)
         {
-            ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator), typeof(MosaicArtGenerator));
+            ImageResult ir = new ImageResult(data, colorsPerRow);//, typeof(MondriaanArtGenerator), typeof(MosaicArtGenerator));
             //ThreadPool.QueueUserWorkItem(ExecuteThread, ir);
             if (_thread != null && _thread.IsAlive)
                 _thread.Abort();

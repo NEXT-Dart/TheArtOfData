@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace TheArtOfData.Imaging
 {
-    public class Image
+    public class CustomImage
     {
         #region "Fields"
 
         private int width;
         private int height;
         private uint[] pixels;
+
+        private uint transparent;
 
         #endregion
 
@@ -24,22 +26,42 @@ namespace TheArtOfData.Imaging
         /// </summary>
         /// <param name="width">The width of the image</param>
         /// <param name="height">The height of the image</param>
-        public Image(int width, int height)
+        public CustomImage(int width, int height)
         {
             pixels = new uint[width * height];
             this.width = width;
             this.height = height;
+
+            transparent = ConvertColorToInt(Color.Transparent);
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = transparent;
+            }
         }
 
         /// <summary>
-        /// The copy constructor for the Image class
+        /// The copy constructor for the custom image class
         /// </summary>
         /// <param name="source">The original image to copy</param>
-        public Image(Image source)
+        public CustomImage(CustomImage source)
         {
             this.width = source.width;
             this.height = source.height;
             this.pixels = source.pixels;
+            transparent = ConvertColorToInt(Color.Transparent);
+        }
+
+        /// <summary>
+        /// Creates a custom image class from a standard GDI+ image
+        /// </summary>
+        /// <param name="source">A standard GDI+ image</param>
+        public CustomImage(Image source)
+        {
+            this.width = source.Width;
+            this.height = source.Height;
+            pixels = new uint[width * height];
+            transparent = ConvertColorToInt(Color.Transparent);
+            ParseGDImage(source);
         }
 
         #endregion
@@ -77,8 +99,7 @@ namespace TheArtOfData.Imaging
 
         private uint ConvertColorToInt(Color color)
         {
-            return (uint)((color.A << 24) | (color.R << 16) |
-                    (color.G << 8) | (color.B << 0));
+            return (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | (color.B << 0));
         }
 
         private Color ConvertIntToColor(uint color)
@@ -90,12 +111,20 @@ namespace TheArtOfData.Imaging
             return Color.FromArgb(a, r, g, b);
         }
 
+        private uint ConvertBytesToInt(byte r, byte g, byte b, byte a)
+        {
+            return (uint)((a << 24) | (r << 16) | (g << 8) | (b << 0));
+        }
+
         /// <summary>
         /// Gets a System.Drawing.Image from the custom Image class
         /// </summary>
         /// <returns></returns>
-        public System.Drawing.Image GetDrawableImage()
+        public Image GetDrawableImage()
         {
+            if (width <= 0 || height <= 0)
+                return new Bitmap(1, 1);
+
             // Create a new bitmap.
             Bitmap bmp = new Bitmap(width, height);
 
@@ -113,23 +142,20 @@ namespace TheArtOfData.Imaging
             byte[] rgbValues = new byte[bytes];
 
             // Copy the RGB values into the array.
-            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+            //System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
 
             // Set the values of the bitmap
             int index = 0;
-            for (int i = 0; i < width; i++)
+            for (int y = 0; y < height; y++)
             {
-                for (int j = 0; j < height; j++)
+                for (int x = 0; x < width; x++)
                 {
-                    Color c = GetPixel(i, j);
-                    rgbValues[index] = c.R;
-                    index++;
-                    rgbValues[index] = c.G;
-                    index++;
+                    Color c = GetPixel(x, y);
                     rgbValues[index] = c.B;
-                    index++;
-                    rgbValues[index] = 255;
-                    index++;
+                    rgbValues[index + 1] = c.G;
+                    rgbValues[index + 2] = c.R;
+                    rgbValues[index + 3] = 255;
+                    index += 4;
                 }
             }
 
@@ -142,6 +168,15 @@ namespace TheArtOfData.Imaging
             return bmp;
         }
 
+        public Image GetDrawbaleImageScaled(int scale)
+        {
+            CustomImage newImage = new CustomImage(width * scale, height * scale);
+
+
+
+            return newImage.GetDrawableImage();
+        }
+
         /// <summary>
         /// Generates a binary image from the current Image according to the treshold value. All under the treshold will be black; otherwise white.
         /// With the r,g,b parameters specific colors can be excluded from the treshold calculation
@@ -151,9 +186,9 @@ namespace TheArtOfData.Imaging
         /// <param name="green">This parameters excludes the green colors from the treshold calculation</param>
         /// <param name="blue">This parameters excludes the blue colors from the treshold calculation</param>
         /// <returns>A new instance of an Image containing a binary image</returns>
-        public Image GetBinaryImage(int treshold, bool red = true, bool green = true, bool blue = true)
+        public CustomImage GetBinaryImage(int treshold, bool red = true, bool green = true, bool blue = true)
         {
-            Image binary = new Image(this);
+            CustomImage binary = new CustomImage(this);
             int r = red ? 1 : 0;
             int g = green ? 1 : 0;
             int b = blue ? 1 : 0;
@@ -181,13 +216,13 @@ namespace TheArtOfData.Imaging
         public void RotateImage(int rotation)
         {
             // Check if we can actually rotate the image
-            if (rotation != 90 || rotation != 180 || rotation != 270)
+            if (rotation != 90 && rotation != 180 && rotation != 270)
             {
                 return;
             }
 
             // Set new boundaries for the new image
-            Image newImage = CreateImageScales(this, rotation);
+            CustomImage newImage = CreateImageScales(this, rotation);
 
             // Perform the rotation
             switch (rotation)
@@ -209,15 +244,15 @@ namespace TheArtOfData.Imaging
             height = newImage.height;
         }
 
-        private Image CreateImageScales(Image original, int rotation)
+        private CustomImage CreateImageScales(CustomImage original, int rotation)
         {
             if (rotation == 90 || rotation == 270)
-                return new Image(original.height, original.width);
+                return new CustomImage(original.height, original.width);
 
-            return new Image(original.width, original.height);
+            return new CustomImage(original.width, original.height);
         }
 
-        private void Perform90DegreesRotation(ref Image image)
+        private void Perform90DegreesRotation(ref CustomImage image)
         {
             // Start reading from left to right in the top left corner and put it back top to down from the top right corner
             int x = 0, y = 0;
@@ -237,7 +272,7 @@ namespace TheArtOfData.Imaging
             }
         }
 
-        private void Perform180DegreesRotation(ref Image image)
+        private void Perform180DegreesRotation(ref CustomImage image)
         {
             // Start reading from left to right in the top left corner and put it back right to left from the bottom right corner
             int x = 0, y = 0;
@@ -257,7 +292,7 @@ namespace TheArtOfData.Imaging
             }
         }
 
-        private void Perform270DegreesRotation(ref Image image)
+        private void Perform270DegreesRotation(ref CustomImage image)
         {
             // Start reading from left to right in the top left corner and put it back bottom to top from the bottom left corner
             int x = 0, y = 0;
@@ -275,6 +310,147 @@ namespace TheArtOfData.Imaging
                     }
                 }
             }
+        }
+
+        private void ParseGDImage(Image source)
+        {
+            // Create a new bitmap.
+            Bitmap bmp = new Bitmap(source);
+
+            // Lock the bitmap's bits.  
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            System.Drawing.Imaging.BitmapData bmpData =
+                bmp.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+                bmp.PixelFormat);
+
+            // Get the address of the first line.
+            IntPtr ptr = bmpData.Scan0;
+
+            // Declare an array to hold the bytes of the bitmap.
+            int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+            byte[] rgbValues = new byte[bytes];
+
+            // Copy the RGB values into the array.
+            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+
+            // Set the values of the bitmap
+            int index = 0, x = 0, y = 0;
+            while (index < rgbValues.Length)
+            {
+                byte b = rgbValues[index];
+                byte g = rgbValues[index + 1];
+                byte r = rgbValues[index + 2];
+                byte a = rgbValues[index + 3];
+                pixels[y * width + x] = ConvertBytesToInt(r, g, b, a);
+                index += 4;
+
+                x++;
+                if (x == width)
+                {
+                    x = 0;
+                    y++;
+                }
+            }
+
+            // Copy the RGB values back to the bitmap
+            //System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+
+            // Unlock the bits.
+            bmp.UnlockBits(bmpData);
+        }
+
+        /// <summary>
+        /// Optimizes the image (removes all transparent pixels where possible
+        /// </summary>
+        public void Optimize()
+        {
+            // Check the rows for transparency
+            int top = 0, bottom = 0, left = 0, right = 0;
+            bool _do0 = true, _do1 = true;
+            for (int i = 0; i < height; i++)
+            {
+                if (_do0)
+                {
+                    _do0 = IsRowTransparent(i);
+                    top += _do0 ? 1 : 0;
+                }
+                if (_do1)
+                {
+                    _do1 = IsRowTransparent(height - 1 - i);
+                    bottom += _do1 ? 1 : 0;
+                }
+            }
+
+            _do0 = true;
+            _do1 = true;
+
+            // Check the columns for transparency
+            for (int i = 0; i < width; i++)
+            {
+                if (_do0)
+                {
+                    _do0 = IsColumnTransparent(i);
+                    left += _do0 ? 1 : 0;
+                }
+                if (_do1)
+                {
+                    _do1 = IsColumnTransparent(width - 1 - i);
+                    right += _do1 ? 1 : 0;
+                }
+            }
+
+            // Crop the image
+            Crop(top, bottom, left, right);
+        }
+
+        private bool IsRowTransparent(int row)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (pixels[row * width + x] != transparent)
+                    return false;
+            }
+            return true;
+        }
+
+        private bool IsColumnTransparent(int column)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (pixels[y * width + column] != transparent)
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Crops the image from each side with the given amount of pixels
+        /// </summary>
+        /// <param name="top">The amount of pixel to cut from the top</param>
+        /// <param name="bottom">The amount of pixel to cut from the bottom</param>
+        /// <param name="left">The amount of pixel to cut from the left</param>
+        /// <param name="right">The amount of pixel to cut from the right</param>
+        public void Crop(int top, int bottom, int left, int right)
+        {
+            CustomImage cropped = new CustomImage(width - left - right, height - top - bottom);
+            int newX = 0, newY = 0;
+            for (int y = top; y < height - bottom; y++)
+            {
+                for (int x = left; x < width - right; x++)
+                {
+                    cropped.pixels[newY * cropped.width + newX] = pixels[y * width + x];
+                    newX++;
+                    if (newX >= cropped.width)
+                    {
+                        newX = 0;
+                        newY++;
+                    }
+                }
+            }
+
+            pixels = cropped.pixels;
+            width = cropped.width;
+            height = cropped.height;
         }
 
         #endregion
@@ -299,9 +475,14 @@ namespace TheArtOfData.Imaging
 
         #region "Operators"
 
-        public static implicit operator System.Drawing.Image(Image img)
+        public static implicit operator Image(CustomImage img)
         {
             return img.GetDrawableImage();
+        }
+
+        public static implicit operator Bitmap(CustomImage img)
+        {
+            return new Bitmap(img.GetDrawableImage());
         }
 
         #endregion

@@ -17,7 +17,7 @@ namespace TestProject
         public void TestImageClass()
         {
             // Create a 9 pixel image to test with
-            TheArtOfData.Imaging.Image image = new TheArtOfData.Imaging.Image(3, 3);
+            CustomImage image = new CustomImage(3, 3);
 
             // Set some pixels for the image
             image.SetPixel(0, 0, Color.Red);
@@ -44,14 +44,13 @@ namespace TestProject
             Assert.IsFalse(image.GetPixel(2, 0) == Color.Red, "The image was not correctly rotated");
 
             // Generate a binary image with only red enabled
-            TheArtOfData.Imaging.Image binary = image.GetBinaryImage(100, green: false, blue: false);
+            CustomImage binary = image.GetBinaryImage(100, green: false, blue: false);
 
             Assert.IsFalse(image.GetPixel(2, 0) == Color.Black, "The binary image was not correctly created");
 
-            // Generate a binary image from all the data
-            binary = image.GetBinaryImage(100);
-
-            Assert.IsFalse(image.GetPixel(1, 1) == Color.FromArgb(85, 85, 85), "The binary image was not correcly created");
+            image = new CustomImage(Image.FromFile(@"D:\Users\Bas\Afbeeldingen\07icon_111512123247[1].png"));
+            image.Crop(100, 100, 100, 100);
+            image.GetDrawableImage().Save(@"D:\Users\Bas\Desktop\output.png");
         }
     }
 }
