@@ -253,7 +253,7 @@ namespace Imaging
         /// <param name="green">This parameters excludes the green colors from the treshold calculation</param>
         /// <param name="blue">This parameters excludes the blue colors from the treshold calculation</param>
         /// <returns>A new instance of an Image containing a binary image</returns>
-        public CustomImage GetBinaryImage(int threshold, bool red = true, bool green = true, bool blue = true)
+        public CustomBinaryImage GetBinaryImage(int threshold, bool red = true, bool green = true, bool blue = true)
         {
             return CustomBinaryImage.CreateFromImage(this, threshold, red, green, blue);
         }
