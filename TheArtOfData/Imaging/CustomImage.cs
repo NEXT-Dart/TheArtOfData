@@ -48,7 +48,11 @@ namespace Imaging
             this.width = source.width;
             this.height = source.height;
             //this.pixels = source.pixels;
-            Array.Copy(source.pixels, pixels, source.pixels.Length);
+            this.pixels = new uint[source.pixels.Length];
+            for (int i = 0; i < source.pixels.Length; i++)
+            {
+                pixels[i] = source.pixels[i];
+            }
             transparent = ConvertColorToInt(Color.Transparent);
         }
 
@@ -194,8 +198,8 @@ namespace Imaging
                     {
                         for (int newY = y * scale; newY < y * scale + scale; newY++)
                         {
-                            newImage.pixels[newY * newImage.width + newY] = pixels[y * width + x];
-                            //newImage.SetPixel(newX, newY, GetPixel(x, y));
+                            //newImage.pixels[newY * newImage.width + newY] = pixels[y * width + x];
+                            newImage.SetPixel(newX, newY, GetPixel(x, y));
                         }
                     }
                 }
