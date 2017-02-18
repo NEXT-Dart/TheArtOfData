@@ -193,8 +193,8 @@ namespace Imaging
                     {
                         for (int newY = y * scale; newY < y * scale + scale; newY++)
                         {
-                            newImage.pixels[newY * newImage.width + newY] = pixels[y * width + x];
-                            //newImage.SetPixel(newX, newY, GetPixel(x, y));
+                            //newImage.pixels[newY * newImage.width + newY] = pixels[y * width + x];
+                            newImage.SetPixel(newX, newY, GetPixel(x, y));
                         }
                     }
                 }
