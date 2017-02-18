@@ -193,7 +193,8 @@ namespace Imaging
                     {
                         for (int newY = y * scale; newY < y * scale + scale; newY++)
                         {
-                            newImage.SetPixel(newX, newY, GetPixel(x, y));
+                            newImage.pixels[newY * newImage.width + newY] = pixels[y * width + x];
+                            //newImage.SetPixel(newX, newY, GetPixel(x, y));
                         }
                     }
                 }
@@ -258,7 +259,7 @@ namespace Imaging
                     Color c = ConvertIntToColor(pixels[y * width + x]);
                     int gray = (c.R * r + c.G * g + c.B * b) / (r + g + b);
 
-                    binary.pixels[y * width + x] = gray < treshold ? white : black;
+                    binary.pixels[y * width + x] = gray < treshold ? black : white;
                 }
             }
 
