@@ -68,7 +68,15 @@ namespace Imaging
 
         #region "Properties"
 
+        public int Width
+        {
+            get { return width; }
+        }
 
+        public int Height
+        {
+            get { return height; }
+        }
 
         #endregion
 
