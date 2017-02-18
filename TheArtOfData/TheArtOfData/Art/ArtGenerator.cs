@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace TheArtOfData.Art
 
         public abstract void AddBytes(byte[] data);
 
-        public abstract Image GetImage();
+        public abstract CustomImage GetImage();
 
         #endregion
 

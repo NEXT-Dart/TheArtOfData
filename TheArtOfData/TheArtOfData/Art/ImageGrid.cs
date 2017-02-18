@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -86,11 +87,11 @@ namespace TheArtOfData.Art
             colors[x * size + y] = val + 2;
         }
 
-        public Image CreateBitmap(int s)
+        public CustomImage CreateBitmap()
         {
-            Bitmap bitmap = new Bitmap(s, s);
+            CustomImage img = new CustomImage(size, size);
 
-            int size = s / this.size;
+            //int size = s / this.size;
 
             for (int x = 0; x < this.size; x++)
             {
@@ -107,18 +108,11 @@ namespace TheArtOfData.Art
                     else if (colors[x * this.size + y] == 3)
                         c = Color.Blue;
 
-                    for (int i = 0; i < size; i++)
-                    {
-                        for (int j = 0; j < size; j++)
-                        {
-                            bitmap.SetPixel(x * size + i, y * size + j, c);
-                        }
-                    }
-
+                    img.SetPixel(x, y, c);
                 }
             }
 
-            return bitmap;
+            return img;
         }
 
         public void CheckCollisions()

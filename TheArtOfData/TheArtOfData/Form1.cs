@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -44,41 +45,15 @@ namespace TheArtOfData
             instance = this;
             __timestampLock = new object();
 
-            //new Input().Show();
-
             controls = new Dictionary<Type, Control>();
             controls.Add(typeof(ImageDataWriter), pictureBox1);
             controls.Add(typeof(MondriaanArtGenerator), pictureBox2);
-            controls.Add(typeof(MosaicArtGenerator), pictureBox3);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            ImageDataWriter idw = new ImageDataWriter();
-            idw.AddString("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui");
-
-            Image image = idw.GetImage(Convert.ToInt32(comboBox1.SelectedItem.ToString()));
-            pictureBox1.Image = image;
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            PrintDocument pd = new PrintDocument();
-            pd.PrintPage += PrintPage;
-
-            PrintDialog printDialog = new PrintDialog();
-            printDialog.Document = pd;
-            if (printDialog.ShowDialog() == DialogResult.Cancel)
-                return;
-            pd.PrinterSettings = printDialog.PrinterSettings;
-
-            pd.Print();
+            //controls.Add(typeof(MosaicArtGenerator), pictureBox3);
         }
 
         public void RedrawImage(int colorsPerRow, byte[] data)
         {
-            ImageResult ir = new ImageResult(data, colorsPerRow);//, typeof(MondriaanArtGenerator), typeof(MosaicArtGenerator));
-            //ThreadPool.QueueUserWorkItem(ExecuteThread, ir);
+            ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator));//, typeof(MosaicArtGenerator));
             if (_thread != null && _thread.IsAlive)
                 _thread.Abort();
             _thread = new Thread(ExecuteThread);
@@ -97,36 +72,21 @@ namespace TheArtOfData
                     foreach (KeyValuePair<Type, Control> kvp in controls)
                     {
                         PropertyInfo pi = kvp.Value.GetType().GetProperty("Image");
-                        Image img;
+                        CustomImage img;
                         ir.Image.TryGetValue(kvp.Key, out img);
-                        pi.SetValue(kvp.Value, img);
+                        img.Optimize();
+                        pi.SetValue(kvp.Value, img.GetDrawableImageScaled(kvp.Value.Width, kvp.Value.Height));
                     }
 
                     PropertyInfo popOutPic = PopOut.INSTANCE.pictureBox1.GetType().GetProperty("Image");
-                    Image pop;
+                    CustomImage pop;
                     ir.Image.TryGetValue(typeof(ImageDataWriter), out pop);
-                    popOutPic.SetValue(PopOut.INSTANCE.pictureBox1, pop);
+                    pop.Optimize();
+                    popOutPic.SetValue(PopOut.INSTANCE.pictureBox1, pop.GetDrawableImageScaled(PopOut.INSTANCE.pictureBox1.Width, PopOut.INSTANCE.pictureBox1.Height));
 
                     currentImageTimestamp = ir.TimeStamp;
                 }
             }
-        }
-
-        private void PrintPage(object o, PrintPageEventArgs e)
-        {
-            ImageDataWriter idw = new ImageDataWriter();
-            idw.AddString("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui");
-            //idw.AddBytes(File.ReadAllBytes(@"D:\Users\Bas\Desktop\.text"));
-            //idw.GetImage(200).Save(@"D:\Users\Bas\Desktop\next200.png", ImageFormat.Png);
-
-            Image img = idw.GetImage(Convert.ToInt32(comboBox1.SelectedItem.ToString()));
-            Point loc = new Point(50, 50);
-            e.Graphics.DrawImage(img, loc);
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            comboBox1.SelectedIndex = 0;
         }
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)

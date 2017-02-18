@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace TheArtOfData.Art
             }
         }
 
-        public override Image GetImage()
+        public override CustomImage GetImage()
         {
             const int bitmapSize = 500;
             int width = (int)(Math.Sqrt(data.Count * 8 / TintedColor.bits) + 1);
@@ -97,7 +98,7 @@ namespace TheArtOfData.Art
                 }
             }
 
-            return ImageDataWriter.TrimBitmap(bitmap);
+            return new CustomImage(bitmap);// ImageDataWriter.TrimBitmap(bitmap);
         }
 
         #endregion

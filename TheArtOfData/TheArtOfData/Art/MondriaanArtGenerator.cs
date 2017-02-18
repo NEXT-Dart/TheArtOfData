@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -125,14 +126,13 @@ namespace TheArtOfData.Art
             this.data.AddRange(data);
         }
 
-        public override Image GetImage()
+        public override CustomImage GetImage()
         {
             if (data.Count == 0)
-                return new Bitmap(1, 1);
+                return new CustomImage(1, 1);
 
             // Create the bits on the image grid
             int totalBitCount = data.Count * 8;
-            const int size = 500;
             int imgSize = 10 + (int)(totalBitCount * 0.5);
 
             rand = new Random(data[0]);
@@ -171,7 +171,7 @@ namespace TheArtOfData.Art
                 line.SetBitsOnLine(ig, GetBits(Ceil((float)totalBitCount * percentage)));
             }
 
-            return ig.CreateBitmap(size);
+            return ig.CreateBitmap();
         }
 
         private int Ceil(float value)

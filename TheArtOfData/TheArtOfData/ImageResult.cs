@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -13,7 +14,7 @@ namespace TheArtOfData
     {
         #region "Fields"
 
-        private Dictionary<Type, Image> image;
+        private Dictionary<Type, CustomImage> image;
         private int colorsPerRow;
         private byte[] data;
         private ImageDataWriter idw;
@@ -30,7 +31,7 @@ namespace TheArtOfData
             this.colorsPerRow = colorsPerRow;
             this.timestamp = DateTime.Now;
             this.outputTypes = outputImages;
-            image = new Dictionary<Type, Image>();
+            image = new Dictionary<Type, CustomImage>();
         }
 
         #endregion
@@ -42,7 +43,7 @@ namespace TheArtOfData
             get { return timestamp; }
         }
 
-        public Dictionary<Type, Image> Image
+        public Dictionary<Type, CustomImage> Image
         {
             get { return image; }
         }
@@ -59,13 +60,17 @@ namespace TheArtOfData
             sw.Start();
             image.Add(typeof(ImageDataWriter), idw.GetImage(colorsPerRow));
             sw.Stop();
-            Debug.WriteLine(sw.ElapsedMilliseconds);
+            Debug.WriteLine("Normal: " + sw.ElapsedMilliseconds + " ms");
 
             foreach (Type type in outputTypes)
             {
+                sw = new Stopwatch();
+                sw.Start();
                 ArtGenerator gen = Activator.CreateInstance(type) as ArtGenerator;
                 gen.AddBytes(data);
                 image.Add(type, gen.GetImage());
+                sw.Stop();
+                Debug.WriteLine(type.Name + ": " + sw.ElapsedMilliseconds + " ms");
             }
         }
 

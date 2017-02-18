@@ -35,10 +35,10 @@
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(200, 200);
+            this.pictureBox1.Location = new System.Drawing.Point(50, 50);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(413, 69);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.Size = new System.Drawing.Size(713, 369);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
@@ -50,7 +50,7 @@
             this.ClientSize = new System.Drawing.Size(813, 469);
             this.Controls.Add(this.pictureBox1);
             this.Name = "PopOut";
-            this.Padding = new System.Windows.Forms.Padding(200);
+            this.Padding = new System.Windows.Forms.Padding(50);
             this.Text = "PopOut";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PopOut_FormClosing);
             this.Resize += new System.EventHandler(this.PopOut_Resize);
