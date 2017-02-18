@@ -54,7 +54,7 @@ namespace Imaging
 
         public CustomBinaryImage Merge(CustomBinaryImage merge, bool mergeBlack = true)
         {
-            if (merge.width != this.width && merge.height != this.height)
+            if (merge.width != this.width || merge.height != this.height)
                 return this;
 
             CustomBinaryImage merged = new CustomBinaryImage(this);
