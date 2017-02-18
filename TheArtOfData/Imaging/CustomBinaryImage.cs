@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Imaging
 {
-    class CustomBinaryImage : CustomImage
+    public class CustomBinaryImage : CustomImage
     {
         #region "Fields"
 
