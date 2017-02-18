@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheArtOfData.Imaging
+namespace Imaging
 {
     public class CustomImage
     {
@@ -168,13 +168,61 @@ namespace TheArtOfData.Imaging
             return bmp;
         }
 
-        public Image GetDrawbaleImageScaled(int scale)
+        /// <summary>
+        /// Gets a System.Drawing.Image from the custom Image class. Each pixel is drawed as x pixels (if scale is 5 exery pixel of the image is drawn as a 5x5 square)
+        /// </summary>
+        /// <param name="scale">The scale of each pixel</param>
+        /// <returns>A drawable image</returns>
+        public Image GetDrawableImageScaled(int scale)
         {
             CustomImage newImage = new CustomImage(width * scale, height * scale);
 
-
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int newX = x * scale; newX < x * scale + scale; newX++)
+                    {
+                        for (int newY = y * scale; newY < y * scale + scale; newY++)
+                        {
+                            newImage.SetPixel(newX, newY, GetPixel(x, y));
+                        }
+                    }
+                }
+            }
 
             return newImage.GetDrawableImage();
+        }
+
+        public Image GetDrawableImageScaled(int maxWidth = -1, int maxHeight = -1)
+        {
+            if (maxWidth == -1 && maxHeight == -1)
+                return GetDrawableImageScaled(1);
+
+            // Calculate the size per pixel
+            int pixelWidth = 0;
+            int pixelHeight = 0;
+            if (maxWidth != -1)
+            {
+                pixelWidth = maxWidth / width;
+            }
+            if (maxHeight != -1)
+            {
+                pixelHeight = maxHeight / height;
+            }
+
+            if (maxWidth == -1)
+                pixelWidth = pixelHeight;
+            else if (maxHeight == -1)
+                pixelHeight = pixelWidth;
+
+            // Compare the pixel width and height
+            if (pixelWidth < pixelHeight)
+                pixelHeight = pixelWidth;
+            else if (pixelHeight < pixelWidth)
+                pixelWidth = pixelHeight;
+
+            return GetDrawableImageScaled(pixelWidth);
         }
 
         /// <summary>

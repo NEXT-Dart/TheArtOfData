@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,7 +62,6 @@
     </Compile>
     <Compile Include="ImageDataWriter.cs" />
     <Compile Include="ImageResult.cs" />
-    <Compile Include="Imaging\Image.cs" />
     <Compile Include="Input.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +106,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Imaging\Imaging.csproj">
+      <Project>{7dfb41b2-1f5f-420b-a47d-96679f6ebbc6}</Project>
+      <Name>Imaging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

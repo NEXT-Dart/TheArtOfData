@@ -57,6 +57,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Imaging\Imaging.csproj">
+      <Project>{7DFB41B2-1F5F-420B-A47D-96679F6EBBC6}</Project>
+      <Name>Imaging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TheArtOfData\TheArtOfData.csproj">
       <Project>{abf89367-3e00-4dc5-b3bb-d38c67757b3c}</Project>
       <Name>TheArtOfData</Name>

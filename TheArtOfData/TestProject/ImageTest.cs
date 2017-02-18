@@ -2,8 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TheArtOfData.Imaging;
 using System.Drawing;
+using Imaging;
 
 namespace TestProject
 {
@@ -48,9 +48,12 @@ namespace TestProject
 
             Assert.IsFalse(image.GetPixel(2, 0) == Color.Black, "The binary image was not correctly created");
 
-            image = new CustomImage(Image.FromFile(@"D:\Users\Bas\Afbeeldingen\07icon_111512123247[1].png"));
-            image.Crop(100, 100, 100, 100);
-            image.GetDrawableImage().Save(@"D:\Users\Bas\Desktop\output.png");
+            image = new CustomImage(2,2);
+            image.SetPixel(0, 0, Color.Red);
+            image.SetPixel(0, 1, Color.Green);
+            image.SetPixel(1, 0, Color.Yellow);
+            image.SetPixel(1, 1, Color.Blue);
+            image.GetDrawableImageScaled(maxWidth: 10).Save(@"D:\Users\Bas\Desktop\output.png");
         }
     }
 }
