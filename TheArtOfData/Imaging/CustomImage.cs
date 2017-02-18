@@ -11,15 +11,20 @@ namespace Imaging
     {
         #region "Fields"
 
-        private int width;
-        private int height;
-        private uint[] pixels;
+        protected int width;
+        protected int height;
+        protected uint[] pixels;
 
         private uint transparent;
 
         #endregion
 
         #region "Constructors"
+
+        protected CustomImage()
+        {
+
+        }
 
         /// <summary>
         /// Creates a new instance of an image
@@ -110,12 +115,12 @@ namespace Imaging
             return ConvertIntToColor(pixels[y * width + x]);
         }
 
-        private uint ConvertColorToInt(Color color)
+        protected uint ConvertColorToInt(Color color)
         {
             return (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | (color.B << 0));
         }
 
-        private Color ConvertIntToColor(uint color)
+        protected Color ConvertIntToColor(uint color)
         {
             byte a = (byte)(color >> 24);
             byte r = (byte)(color >> 16);
@@ -124,7 +129,7 @@ namespace Imaging
             return Color.FromArgb(a, r, g, b);
         }
 
-        private uint ConvertBytesToInt(byte r, byte g, byte b, byte a)
+        protected uint ConvertBytesToInt(byte r, byte g, byte b, byte a)
         {
             return (uint)((a << 24) | (r << 16) | (g << 8) | (b << 0));
         }

@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomBinaryImage.cs" />
     <Compile Include="CustomImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
