@@ -133,7 +133,6 @@ namespace TheArtOfData
             }
 
             bitmap.Optimize();
-            bitmap.DrawScale = 1;
             bitmap.GetDrawableImage().Save(@"D:\Users\Bas\Desktop\output.png");
             return bitmap;
         }
