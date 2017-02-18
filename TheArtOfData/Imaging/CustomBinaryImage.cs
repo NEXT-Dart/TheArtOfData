@@ -52,6 +52,12 @@ namespace Imaging
             }
         }
 
+        /// <summary>
+        /// Merges 2 images of the same size together
+        /// </summary>
+        /// <param name="merge">The image to merge with this one</param>
+        /// <param name="mergeBlack">Indicator to merge te black or white pixels</param>
+        /// <returns>A new CustomBinaryImage with the merged pixels</returns>
         public CustomBinaryImage Merge(CustomBinaryImage merge, bool mergeBlack = true)
         {
             if (merge.width != this.width || merge.height != this.height)

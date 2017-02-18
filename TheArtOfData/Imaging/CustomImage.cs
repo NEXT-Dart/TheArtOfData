@@ -248,32 +248,14 @@ namespace Imaging
         /// Generates a binary image from the current Image according to the treshold value. All under the treshold will be black; otherwise white.
         /// With the r,g,b parameters specific colors can be excluded from the treshold calculation
         /// </summary>
-        /// <param name="treshold">The treshold value. Can be an integer value between 0 and 255. All under the treshold will be black; otherwise white</param>
+        /// <param name="threshold">The treshold value. Can be an integer value between 0 and 255. All under the treshold will be black; otherwise white</param>
         /// <param name="red">This parameters excludes the red colors from the treshold calculation</param>
         /// <param name="green">This parameters excludes the green colors from the treshold calculation</param>
         /// <param name="blue">This parameters excludes the blue colors from the treshold calculation</param>
         /// <returns>A new instance of an Image containing a binary image</returns>
-        public CustomImage GetBinaryImage(int treshold, bool red = true, bool green = true, bool blue = true)
+        public CustomImage GetBinaryImage(int threshold, bool red = true, bool green = true, bool blue = true)
         {
-            CustomImage binary = new CustomImage(this);
-            int r = red ? 1 : 0;
-            int g = green ? 1 : 0;
-            int b = blue ? 1 : 0;
-
-            uint white = ConvertColorToInt(Color.White), black = ConvertColorToInt(Color.Black);
-
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    Color c = ConvertIntToColor(pixels[y * width + x]);
-                    int gray = (c.R * r + c.G * g + c.B * b) / (r + g + b);
-
-                    binary.pixels[y * width + x] = gray < treshold ? black : white;
-                }
-            }
-
-            return binary;
+            return CustomBinaryImage.CreateFromImage(this, threshold, red, green, blue);
         }
 
         /// <summary>
