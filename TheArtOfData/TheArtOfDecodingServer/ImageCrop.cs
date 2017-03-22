@@ -74,7 +74,6 @@ namespace TheArtOfDecoding
 
         private Image Crop()
         {
-            Console.WriteLine("running crop");
             // Get a binary image by removing all gray
             Bitmap binary = GetBinaryBitmap();
 
@@ -144,7 +143,6 @@ namespace TheArtOfDecoding
 
         public static Image Crop(Image image)
         {
-            Console.WriteLine("starting crop-");
             return new ImageCrop(image).Crop();
         }
 

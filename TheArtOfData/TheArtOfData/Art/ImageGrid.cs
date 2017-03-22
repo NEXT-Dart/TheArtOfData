@@ -13,136 +13,75 @@ namespace TheArtOfData.Art
     {
         #region "Fields"
 
-        private int[] colors;
         private int size;
         private Random rand;
         private List<LineData> lines;
+        private List<Point> crossings;
+        private List<Point> knownPoints;
 
         #endregion
 
         #region "Constructors"
 
-        public ImageGrid(int size, Random rand)
+        public ImageGrid(int size)
         {
-            colors = new int[size * size];
             this.size = size;
-            this.rand = rand;
             lines = new List<LineData>();
+            crossings = new List<Point>();
+            knownPoints = new List<Point>();
+            rand = new Random();
         }
 
         #endregion
 
         #region "Properties"
 
-        public LineData[] Lines
+        public int Size
         {
-            get
-            {
-                return lines.OrderByDescending(x => x.IsHorizontal).ThenBy(h => h.IsHorizontal ? h.Start.Y : h.Start.X).ToArray();
-            }
+            get { return size; }
+        }
+
+        public List<Point> Crossings
+        {
+            get { return crossings.ToList(); }
         }
 
         #endregion
 
         #region "Methods"
 
-        public void SetRow(int row)
+        public void AddLine(LineData line)
         {
-            int length = rand.Next(size / 3, size);
-            if (rand.Next(0, 5) == 0)
-            {
-                length = size;
-            }
+            lines.Add(line);
+            knownPoints.AddRange(line.ExtraArea);
 
-            int start = length == size ? 0 : (size / 2 - length / 2 - rand.Next(0, (size - length) / 2));
-
-            for (int i = start; i < start + length; i++)
-            {
-                colors[i * size + row] = 1;
-            }
-
-            lines.Add(new LineData(new Point(start, row), new Point(start + length, row)));
+            crossings = knownPoints.GroupBy(x => x)
+                        .Where(group => group.Count() > 1)
+                        .Select(group => group.Key).ToList();
         }
 
-        public void SetColumn(int col)
-        {
-            int length = rand.Next(size / 3, size);
-            if (rand.Next(0, 5) == 0)
-            {
-                length = size;
-            }
-
-            int start = length == size ? 0 : (size / 2 - length / 2 - rand.Next(0, (size - length) / 2));
-
-            for (int i = start; i < start + length; i++)
-            {
-                colors[col * size + i] = 1;
-            }
-
-            lines.Add(new LineData(new Point(col, start), new Point(col, start + length)));
-        }
-
-        public void SetPoint(int x, int y, int val)
-        {
-            colors[x * size + y] = val + 2;
-        }
-
-        public CustomImage CreateBitmap()
+        public CustomImage CreateImage()
         {
             CustomImage img = new CustomImage(size, size);
 
-            //int size = s / this.size;
-
-            for (int x = 0; x < this.size; x++)
+            foreach (LineData line in lines)
             {
-                for (int y = 0; y < this.size; y++)
+                foreach (Point point in line.Line)
                 {
-                    Color c = Color.Green;
-
-                    if (colors[x * this.size + y] == 0)
-                        continue;
-                    else if (colors[x * this.size + y] == 1)
-                        c = Color.Gold;
-                    else if (colors[x * this.size + y] == 2)
+                    img.SetPixel(point.X, point.Y, Color.Gold);
+                }
+                foreach (KeyValuePair<Point, int> point in line.DataPoints)
+                {
+                    Color c = Color.Gold;
+                    if (point.Value == 0)
                         c = Color.Maroon;
-                    else if (colors[x * this.size + y] == 3)
+                    else if (point.Value == 1)
                         c = Color.Blue;
-
-                    img.SetPixel(x, y, c);
+                    img.SetPixel(point.Key.X, point.Key.Y, c);
                 }
             }
 
             return img;
-        }
-
-        public void CheckCollisions()
-        {
-            // Get all yellow points
-            List<Point> yellows = new List<Point>();
-            for (int i = 0; i < colors.Length; i++)
-            {
-                if (colors[i] == 1)
-                {
-                    yellows.Add(new Point(i / size, i % size));
-                }
-            }
-
-            // Check all the surrounding pixels
-            foreach (Point yellow in yellows)
-            {
-                Point[] surrounding = yellows.Where(x => x.X >= yellow.X - 1 && x.X <= yellow.X + 1 && x.Y >= yellow.Y - 1 && x.Y <= yellow.Y + 1).ToArray();
-                surrounding = surrounding.Where(x => x != yellow).ToArray();
-
-                if (surrounding.Length >= 3)
-                {
-                    LineData[] lines = this.lines.Where(x => x.Area.Contains(yellow)).ToArray();
-                    foreach (LineData line in lines)
-                    {
-                        line.AddCrossing(yellow);
-                        //colors[yellow.X * size + yellow.Y] += 1;
-                    }
-                }
-            }
         }
 
         #endregion

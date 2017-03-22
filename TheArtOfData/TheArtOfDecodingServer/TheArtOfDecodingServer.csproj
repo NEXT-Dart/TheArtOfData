@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{54E3DE4B-EF9B-49D8-8762-76686B165699}</ProjectGuid>
+    <ProjectGuid>{F7DC6801-31AA-4744-9150-EF97F958BB8D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TheArtOfDecoding</RootNamespace>
-    <AssemblyName>TheArtOfDecoding</AssemblyName>
+    <RootNamespace>TheArtOfDecodingServer</RootNamespace>
+    <AssemblyName>TheArtOfDecodingServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -59,12 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataColors.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="HSLColor.cs" />
     <Compile Include="ImageCrop.cs" />
     <Compile Include="ImageDataReader.cs" />
@@ -75,9 +69,6 @@
     <Compile Include="Server\Client.cs" />
     <Compile Include="Server\LogType.cs" />
     <Compile Include="Server\MainServer.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -86,6 +77,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -100,12 +92,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WebCamWrapper\WebCamWrapper.csproj">
-      <Project>{cc5d5149-0092-4508-ac34-2abe1468a1c9}</Project>
-      <Name>WebCamWrapper</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

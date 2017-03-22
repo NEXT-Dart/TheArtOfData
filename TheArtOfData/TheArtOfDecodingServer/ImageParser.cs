@@ -28,18 +28,14 @@ namespace TheArtOfDecoding
 
         public Image Run()
         {
-            Console.WriteLine("starting");
             try
             {
                 Crop();
-                Console.WriteLine("cropDone");
                 //ChangeBrightnessAndContrast();
-                Console.WriteLine("contrastDone");
                 //Straighten();
                 //pixelsPerRow = GetPixelsFromImage(image);
                 InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
                 Read();
-                Console.WriteLine("readDone");
                 return image;
             }
             catch (Exception ex)

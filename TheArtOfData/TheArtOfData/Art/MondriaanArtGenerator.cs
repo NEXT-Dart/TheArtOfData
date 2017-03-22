@@ -126,52 +126,88 @@ namespace TheArtOfData.Art
             this.data.AddRange(data);
         }
 
+        public CustomImage GetImage1()
+        {
+            //if (data.Count == 0)
+            return new CustomImage(1, 1);
+
+            //// Create the bits on the image grid
+            //int totalBitCount = data.Count * 8;
+            //int imgSize = 10 + (int)(totalBitCount * 0.5);
+
+            //rand = new Random(data[0]);
+
+            //// Get the rows and columns to color yellow
+            //int[] rows = GetRandomNumbers((int)(imgSize * 0.15), 0, imgSize);
+            //int[] columns = GetRandomNumbers((int)(imgSize * 0.15), 0, imgSize);
+
+            //// Create the image grid
+            //ImageGrid ig = new ImageGrid(imgSize, rand);
+            //foreach (int row in rows)
+            //{
+            //    ig.SetRow(row);
+            //}
+
+            //foreach (int col in columns)
+            //{
+            //    ig.SetColumn(col);
+            //}
+
+            //ig.CheckCollisions();
+            //LineData[] lines = ig.Lines;
+
+            //// Get the total amount of bits
+            //int totalLineBits = 0;
+            //foreach (LineData line in lines)
+            //{
+            //    totalLineBits += line.Area.Length / 2;
+            //}
+
+            //// Give each line an amount of bits
+            //foreach (LineData line in lines)
+            //{
+            //    int length = line.Area.Length / 2;
+            //    float percentage = 1f / (float)totalLineBits * length;
+            //    line.SetBitsOnLine(ig, GetBits(Ceil((float)totalBitCount * percentage)));
+            //}
+
+            //return ig.CreateBitmap();
+        }
+
         public override CustomImage GetImage()
         {
             if (data.Count == 0)
                 return new CustomImage(1, 1);
 
-            // Create the bits on the image grid
-            int totalBitCount = data.Count * 8;
-            int imgSize = 10 + (int)(totalBitCount * 0.5);
+            long totalBits = data.Count * 8;
+            rand = new Random();
+            int size = Ceil((float)Math.Sqrt(totalBits));
 
-            rand = new Random(data[0]);
+            ImageGrid grid = new ImageGrid(rand.Next(size * 4, size * 6));
 
-            // Get the rows and columns to color yellow
-            int[] rows = GetRandomNumbers((int)(imgSize * 0.15), 0, imgSize);
-            int[] columns = GetRandomNumbers((int)(imgSize * 0.15), 0, imgSize);
+            int[] rows = GetRandomNumbers(size, 0, grid.Size);
+            int[] cols = GetRandomNumbers(size, 0, grid.Size);
 
-            // Create the image grid
-            ImageGrid ig = new ImageGrid(imgSize, rand);
+            int bitsPerLine = Ceil((float)totalBits / (float)(rows.Length + cols.Length));
             foreach (int row in rows)
             {
-                ig.SetRow(row);
+                LineData line = new LineData(rand.Next(), bitsPerLine, grid.Size, row: row);
+                line.ImageGrid = grid;
+                grid.AddLine(line);
+                line.SetBitsOnLine(GetBits(bitsPerLine));
             }
-
-            foreach (int col in columns)
+            foreach (int col in cols)
             {
-                ig.SetColumn(col);
+                LineData line = new LineData(rand.Next(), bitsPerLine, grid.Size, col: col);
+                line.ImageGrid = grid;
+                grid.AddLine(line);
+                line.SetBitsOnLine(GetBits(bitsPerLine));
             }
 
-            ig.CheckCollisions();
-            LineData[] lines = ig.Lines;
+            CustomImage image = grid.CreateImage();
 
-            // Get the total amount of bits
-            int totalLineBits = 0;
-            foreach (LineData line in lines)
-            {
-                totalLineBits += line.Area.Length / 2;
-            }
-
-            // Give each line an amount of bits
-            foreach (LineData line in lines)
-            {
-                int length = line.Area.Length / 2;
-                float percentage = 1f / (float)totalLineBits * length;
-                line.SetBitsOnLine(ig, GetBits(Ceil((float)totalBitCount * percentage)));
-            }
-
-            return ig.CreateBitmap();
+            image.Optimize();
+            return image;
         }
 
         private int Ceil(float value)

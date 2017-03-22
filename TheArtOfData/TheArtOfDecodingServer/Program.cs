@@ -26,8 +26,8 @@ namespace TheArtOfDecoding
         [STAThread]
         static void Main()
         {
-            bool startServer = false;
-            int serverPort = 4088;
+            bool startServer = true;
+            int serverPort = 666;
             string[] argv = Environment.GetCommandLineArgs();
             if (argv.Length > 0)
             {
@@ -48,7 +48,6 @@ namespace TheArtOfDecoding
                         Console.WriteLine("Help for the The Art of Decoding application");
                         Console.WriteLine();
                         Console.WriteLine("  -h, --help\t\tShows this help message");
-                        Console.WriteLine("  -s, --server\t\tStart the application as a server");
                         Console.WriteLine("  -p:<port>,\n    --port:<port>\tSpecifies the port for this server to connect on");
                         return;
                     }
@@ -65,15 +64,6 @@ namespace TheArtOfDecoding
                 {
                     Thread.Sleep(1);
                 }
-            }
-            else
-            {
-                IntPtr ptr = GetConsoleWindow();
-                ShowWindow(ptr, SW_HIDE);
-
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new Form1());
             }
         }
     }
