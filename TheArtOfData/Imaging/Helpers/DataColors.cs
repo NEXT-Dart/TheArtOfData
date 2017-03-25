@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheArtOfDecoding
+namespace Imaging.Helpers
 {
-    class DataColors
+    public class DataColors
     {
         #region "Fields"
 

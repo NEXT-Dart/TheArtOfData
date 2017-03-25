@@ -98,7 +98,7 @@ namespace TheArtOfData.Art
                 }
             }
 
-            return new CustomImage(bitmap);// ImageDataWriter.TrimBitmap(bitmap);
+            return new CustomImage((Image)bitmap);// ImageDataWriter.TrimBitmap(bitmap);
         }
 
         #endregion

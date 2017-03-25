@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ColorMine">
+      <HintPath>..\TheArtOfDecoding\bin\Debug\ColorMine.dll</HintPath>
+    </Reference>
+    <Reference Include="ImageProcessor">
+      <HintPath>..\TheArtOfDecoding\bin\Debug\ImageProcessor.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -42,8 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomBinaryImage.cs" />
-    <Compile Include="CustomImage.cs" />
+    <Compile Include="Helpers\ColorExtension.cs" />
+    <Compile Include="Helpers\HSVColor.cs" />
+    <Compile Include="Image\CustomBinaryImage.cs" />
+    <Compile Include="Image\CustomImage.cs" />
+    <Compile Include="Helpers\DataColors.cs" />
+    <Compile Include="Helpers\HSLColor.cs" />
+    <Compile Include="Parsing\ImageCrop.cs" />
+    <Compile Include="Parsing\ImageDataReader.cs" />
+    <Compile Include="Parsing\ImageParser.cs" />
+    <Compile Include="Parsing\InterlaceData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

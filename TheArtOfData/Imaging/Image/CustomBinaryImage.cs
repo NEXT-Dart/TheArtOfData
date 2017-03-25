@@ -18,10 +18,18 @@ namespace Imaging
 
         #region "Constructors"
 
-        protected CustomBinaryImage(CustomImage source) : base(source)
+        protected CustomBinaryImage(CustomImage source, bool reverse = false) : base(source)
         {
-            black = ConvertColorToInt(Color.Black);
-            white = ConvertColorToInt(Color.White);
+            if (reverse)
+            {
+                black = ConvertColorToInt(Color.White);
+                white = ConvertColorToInt(Color.Black);
+            }
+            else
+            {
+                black = ConvertColorToInt(Color.Black);
+                white = ConvertColorToInt(Color.White);
+            }
         }
 
         #endregion
@@ -52,6 +60,33 @@ namespace Imaging
             }
         }
 
+        public void FindOutline(out int top, out int bottom, out int left, out int right)
+        {
+            top = -1;
+            bottom = -1;
+            left = -1;
+            right = -1;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    uint pixel = pixels[y * width + x];
+                    if (pixel == white)
+                        continue;
+
+                    if (y < top || top == -1)
+                        top = y;
+                    if (y > bottom)
+                        bottom = y;
+                    if (x > right)
+                        right = x;
+                    if (x < left || left == -1)
+                        left = x;
+                }
+            }
+        }
+
         /// <summary>
         /// Merges 2 images of the same size together
         /// </summary>
@@ -71,14 +106,14 @@ namespace Imaging
                 {
                     if (mergeBlack)
                     {
-                        if(merged.pixels[y * merged.width + x] != white)
+                        if (merged.pixels[y * merged.width + x] != white)
                         {
                             merged.pixels[y * merged.width + x] = merge.pixels[y * merged.width + x];
                         }
                     }
                     else
                     {
-                        if(merged.pixels[y * merged.width + x] != black)
+                        if (merged.pixels[y * merged.width + x] != black)
                         {
                             merged.pixels[y * merged.width + x] = merge.pixels[y * merged.width + x];
                         }
@@ -108,6 +143,15 @@ namespace Imaging
         public static CustomBinaryImage CreateFromImage(CustomImage source, int threshold, bool red = true, bool green = true, bool blue = true)
         {
             CustomBinaryImage binary = new CustomBinaryImage(source);
+
+            binary.CreateBinary(threshold, red, green, blue);
+
+            return binary;
+        }
+
+        public static CustomBinaryImage CreateFromImage(CustomImage source, int threshold, bool reversed, bool red = true, bool green = true, bool blue = true)
+        {
+            CustomBinaryImage binary = new CustomBinaryImage(source, reversed);
 
             binary.CreateBinary(threshold, red, green, blue);
 

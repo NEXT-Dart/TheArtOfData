@@ -96,7 +96,7 @@ namespace Imaging
         /// Sets the color of the pixel at the specified location
         /// </summary>
         /// <param name="x">The horizontal position of the pixel</param>
-        /// <param name="y">Tje verticla position of the pixel</param>
+        /// <param name="y">The vertical position of the pixel</param>
         /// <param name="color">The new color for the pixel</param>
         public void SetPixel(int x, int y, Color color)
         {
@@ -213,6 +213,12 @@ namespace Imaging
             return newImage.GetDrawableImage();
         }
 
+        /// <summary>
+        /// Gets a System.Drawing.Image from the custom Image class. The maxWidth or maxHeight decide the scale of the image
+        /// </summary>
+        /// <param name="maxWidth">The maximum width of the image</param>
+        /// <param name="maxHeight">The maximum height of the image</param>
+        /// <returns>A drawable image</returns>
         public Image GetDrawableImageScaled(int maxWidth = -1, int maxHeight = -1)
         {
             if (maxWidth == -1 && maxHeight == -1)
@@ -361,6 +367,28 @@ namespace Imaging
             }
         }
 
+        public void Shear(int amount)
+        {
+            uint[] shearedImage = new uint[(width + Math.Abs(amount)) * (height + Math.Abs(amount))];
+
+            float stepLength = 1 / ((float)width / (Math.Abs(amount) * 2));
+            float correction = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    int pixelToFetch = (y + (int)correction) * width + x;
+                    if (pixelToFetch > pixels.Length)
+                        continue;
+                    shearedImage[y * width + x] = pixels[pixelToFetch];
+                }
+
+                correction += stepLength;
+            }
+
+            pixels = shearedImage;
+        }
+
         private void ParseGDImage(Image source)
         {
             // Create a new bitmap.
@@ -413,6 +441,12 @@ namespace Imaging
         /// </summary>
         public void Optimize()
         {
+            Optimize(Color.Transparent);
+        }
+
+        public void Optimize(Color color)
+        {
+            uint _uintColor = ConvertColorToInt(color);
             // Check the rows for transparency
             int top = 0, bottom = 0, left = 0, right = 0;
             bool _do0 = true, _do1 = true;
@@ -420,12 +454,12 @@ namespace Imaging
             {
                 if (_do0)
                 {
-                    _do0 = IsRowTransparent(i);
+                    _do0 = HasRowNotColor(i, _uintColor);
                     top += _do0 ? 1 : 0;
                 }
                 if (_do1)
                 {
-                    _do1 = IsRowTransparent(height - 1 - i);
+                    _do1 = HasRowNotColor(height - 1 - i, _uintColor);
                     bottom += _do1 ? 1 : 0;
                 }
             }
@@ -438,12 +472,12 @@ namespace Imaging
             {
                 if (_do0)
                 {
-                    _do0 = IsColumnTransparent(i);
+                    _do0 = HasColumnNotColor(i, _uintColor);
                     left += _do0 ? 1 : 0;
                 }
                 if (_do1)
                 {
-                    _do1 = IsColumnTransparent(width - 1 - i);
+                    _do1 = HasColumnNotColor(width - 1 - i, _uintColor);
                     right += _do1 ? 1 : 0;
                 }
             }
@@ -452,21 +486,21 @@ namespace Imaging
             Crop(top, bottom, left, right);
         }
 
-        private bool IsRowTransparent(int row)
+        private bool HasRowNotColor(int row, uint color)
         {
             for (int x = 0; x < width; x++)
             {
-                if (pixels[row * width + x] != transparent)
+                if (pixels[row * width + x] != color)
                     return false;
             }
             return true;
         }
 
-        private bool IsColumnTransparent(int column)
+        private bool HasColumnNotColor(int column, uint color)
         {
             for (int y = 0; y < height; y++)
             {
-                if (pixels[y * width + column] != transparent)
+                if (pixels[y * width + column] != color)
                     return false;
             }
             return true;
@@ -532,6 +566,11 @@ namespace Imaging
         public static implicit operator Bitmap(CustomImage img)
         {
             return new Bitmap(img.GetDrawableImage());
+        }
+
+        public static implicit operator CustomImage(Image img)
+        {
+            return new CustomImage(img);
         }
 
         #endregion

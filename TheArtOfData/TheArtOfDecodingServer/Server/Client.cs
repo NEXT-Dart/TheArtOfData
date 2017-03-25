@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Imaging.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -84,6 +85,7 @@ namespace TheArtOfDecoding.Server
                 byte[] readedData = reader.GetData();
                 stream.WriteByte(5);
                 stream.Write(readedData, 0, readedData.Length);
+                //InterlaceData.INSTANCE.DrawInterlace(image).Save("out.jpg");
             }
             catch (Exception ex)
             {

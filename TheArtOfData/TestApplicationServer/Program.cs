@@ -20,7 +20,7 @@ namespace TestApplicationServer
                 {
                     NetworkStream stream = client.GetStream();
 
-                    byte[] data = File.ReadAllBytes(@"D:\Developments\Git\TheArtOfData\Test images\D'art of data. You gay.jpg");
+                    byte[] data = File.ReadAllBytes(@"D:\Developments\Git\TheArtOfData\Test images\helloWorldScaled.jpg");
                     client.GetStream().Write(BitConverter.GetBytes((long)data.Length), 0, 8);
                     client.GetStream().Write(data, 0, data.Length);
 

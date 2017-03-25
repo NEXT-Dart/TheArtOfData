@@ -3,18 +3,27 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using ImageProcessor;
-using System.Windows.Forms;
 using System.IO;
 using ColorMine.ColorSpaces;
 using ColorMine.ColorSpaces.Comparisons;
+using Imaging.Helpers;
+using System.Drawing.Drawing2D;
 
-namespace TheArtOfDecoding
+namespace Imaging.Parsing
 {
-    class ImageParser
+    public class ImageParser
     {
         private int pixelsPerRow = 10;
+        private CustomImage customImage;
+        private CustomBinaryImage binImg;
 
-        public Image image { get; private set; }
+        //public Image image { get; private set; }
+
+        public Image image
+        {
+            get { return customImage; }
+            set { customImage = value; }
+        }
 
         public ImageParser(string filename)
         {
@@ -32,7 +41,7 @@ namespace TheArtOfDecoding
             {
                 Crop();
                 //ChangeBrightnessAndContrast();
-                //Straighten();
+                Straighten();
                 //pixelsPerRow = GetPixelsFromImage(image);
                 InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
                 Read();
@@ -133,20 +142,83 @@ namespace TheArtOfDecoding
 
         private void Crop()
         {
-            //ImageFactory imageFactory = new ImageFactory();
-            //imageFactory.Load(image);
-            //imageFactory.EntropyCrop();
-            //image = imageFactory.Image;
+            // Create a color corrected version of the image by setting the V (value) from the HSV colors to 0.5f
+            CustomImage colorCorrection = new CustomImage(customImage.Width, customImage.Height);
+            for (int x = 0; x < customImage.Width; x++)
+            {
+                for (int y = 0; y < customImage.Height; y++)
+                {
+                    HSVColor color = customImage.GetPixel(x, y).ToHSV();
+                    color.Value = 0.5f;
 
+                    HSLColor hsl_color = customImage.GetPixel(x, y).ToHSL();
+                    if (hsl_color.Luminosity <= 0.05f)
+                        colorCorrection.SetPixel(x, y, Color.Black);
+                    else
+                        colorCorrection.SetPixel(x, y, color.ToRGB().ToGrayscale());
+                }
+            }
 
-            image = ImageCrop.Crop(image);
+            // Get a binary image from the color corrected image (102 = 0.4f)
+            binImg = colorCorrection.GetBinaryImage(102);
 
+            // Find the highest and lowest pixels on the x and y axis
+            int top, bottom, left, right;
+            binImg.FindOutline(out top, out bottom, out left, out right);
 
-            //image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
-            //image = Image.FromFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "crop.bmp"));
-            //Display();
+            // Crop the actual image
+            customImage.Crop(top, customImage.Height - bottom, left, customImage.Width - right);
 
+            binImg.Crop(top, binImg.Height - bottom, left, binImg.Width - right);
+            //binImg.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
 
+            // Set some debug information
+            InterlaceData.INSTANCE.StartPosition = new Point(left, top);
+            InterlaceData.INSTANCE.TotalImageWidth = right - left;
+            InterlaceData.INSTANCE.CropInfo = new Rectangle(left, top, right - left, bottom - top);
+
+            //image = customImage;
+        }
+
+        private void Straighten()
+        {
+            List<Point> blackPixelsFirstRow = new List<Point>();
+
+            for (int x = 0; x < binImg.Width; x++)
+            {
+                string name = binImg.GetPixel(x, 0).Name;
+                if (binImg.GetPixel(x, 0).Name == "ff000000")
+                {
+                    blackPixelsFirstRow.Add(new Point(x, 0));
+                }
+            }
+
+            if (blackPixelsFirstRow.Count == 0)
+                return;
+
+            int rotation = 0;
+            if (blackPixelsFirstRow[0].X < binImg.Width / 2)
+            {
+                rotation = GetRotationHeightRight();
+            }
+            else if (blackPixelsFirstRow[blackPixelsFirstRow.Count - 1].X > binImg.Width / 2)
+            {
+                rotation = GetRotationHeightLeft();
+            }
+
+            customImage.Shear(rotation / 2);
+
+            customImage.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
+        }
+
+        private int GetRotationHeightRight()
+        {
+            return -50;
+        }
+
+        private int GetRotationHeightLeft()
+        {
+            return 10;
         }
 
         private void ChangeBrightnessAndContrast()
@@ -260,20 +332,20 @@ namespace TheArtOfDecoding
             //image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "i.bmp"));
         }
 
-        private void Display(Image i)
-        {
-            Form form = new Form();
-            form.StartPosition = FormStartPosition.CenterScreen;
-            form.Size = new Size(800, 600);
-            form.Text = "Debug image";
+        //private void Display(Image i)
+        //{
+        //    Form form = new Form();
+        //    form.StartPosition = FormStartPosition.CenterScreen;
+        //    form.Size = new Size(800, 600);
+        //    form.Text = "Debug image";
 
-            PictureBox pb = new PictureBox();
-            pb.SizeMode = PictureBoxSizeMode.Zoom;
-            pb.Dock = DockStyle.Fill;
-            pb.Image = i;
+        //    PictureBox pb = new PictureBox();
+        //    pb.SizeMode = PictureBoxSizeMode.Zoom;
+        //    pb.Dock = DockStyle.Fill;
+        //    pb.Image = i;
 
-            form.Controls.Add(pb);
-            form.ShowDialog();
-        }
+        //    form.Controls.Add(pb);
+        //    form.ShowDialog();
+        //}
     }
 }
