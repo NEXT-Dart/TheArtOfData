@@ -13,14 +13,14 @@ namespace TestApplicationServer
         static void Main(string[] args)
         {
             bool completed = false;
-            using (TcpClient client = new TcpClient("kdullens.com", 666))
-            //using (TcpClient client = new TcpClient("localhost", 666))
+            //using (TcpClient client = new TcpClient("kdullens.com", 666))
+            using (TcpClient client = new TcpClient("localhost", 666))
             {
                 if (client.Connected)
                 {
                     NetworkStream stream = client.GetStream();
 
-                    byte[] data = File.ReadAllBytes(@"D:\Developments\Git\TheArtOfData\Test images\helloWorldScaled.jpg");
+                    byte[] data = File.ReadAllBytes(@"D:\Developments\Git\TheArtOfData\Test images\photo_2017-03-24_13-16-41.jpg");
                     client.GetStream().Write(BitConverter.GetBytes((long)data.Length), 0, 8);
                     client.GetStream().Write(data, 0, data.Length);
 

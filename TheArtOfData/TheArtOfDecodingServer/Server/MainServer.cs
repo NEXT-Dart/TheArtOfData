@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TheArtOfDecodingServer.Server;
 
 namespace TheArtOfDecoding.Server
 {
@@ -85,7 +86,7 @@ namespace TheArtOfDecoding.Server
 
                     Client client = new Client(clnt);
                     clients.Add(client);
-                    client.Start();
+                    ThreadQue.AddClient(client);
                 }
                 catch (SocketException ex)
                 {
@@ -103,6 +104,7 @@ namespace TheArtOfDecoding.Server
                 Thread.Sleep(1);
             }
             isRunning = false;
+            ThreadQue.Stop();
 
             Log(LogType.INFO, "Server stopped successfully");
         }
@@ -131,6 +133,7 @@ namespace TheArtOfDecoding.Server
                 {
                     clients[0].Terminate();
                 }
+                ThreadQue.Stop();
             }
             else
             {

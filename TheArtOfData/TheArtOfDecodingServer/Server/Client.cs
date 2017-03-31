@@ -7,19 +7,20 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using TheArtOfDecoding.Server;
 
-namespace TheArtOfDecoding.Server
+namespace TheArtOfDecodingServer.Server
 {
     class Client
     {
         #region "Fields"
 
         private TcpClient client;
-        private Thread _thread;
         private bool _stopThread;
         private int id;
         private Image image;
+
+        private ClientStatus status;
 
         private static int clientId;
 
@@ -33,7 +34,8 @@ namespace TheArtOfDecoding.Server
             this.id = clientId;
             _stopThread = false;
             clientId++;
-            _thread = new Thread(RunThread);
+
+            Log(LogType.INFO, "Connection opened");
         }
 
         #endregion
@@ -45,18 +47,17 @@ namespace TheArtOfDecoding.Server
             get { return image; }
         }
 
+        public ClientStatus Status
+        {
+            get { return status; }
+            set { status = value; }
+        }
+
         #endregion
 
         #region "Methods"
 
         public void Start()
-        {
-            _thread.Start();
-
-            Log(LogType.INFO, "Connection opened");
-        }
-
-        private void RunThread()
         {
             NetworkStream stream = client.GetStream();
 

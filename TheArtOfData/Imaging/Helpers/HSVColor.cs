@@ -19,8 +19,8 @@ namespace Imaging.Helpers
             int min = Math.Min(color.R, Math.Min(color.G, color.B));
 
             h = color.GetHue();
-            s = (float)((max == 0) ? 0 : 1d - (1d * min / max));
-            v = (float)(max / 255d);
+            s = ((max == 0) ? 0 : 1f - (1f * min / max));
+            v = (max / 255f);
         }
 
         public float Hue

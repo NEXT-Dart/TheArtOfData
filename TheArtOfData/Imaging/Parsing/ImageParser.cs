@@ -44,7 +44,7 @@ namespace Imaging.Parsing
                 Straighten();
                 //pixelsPerRow = GetPixelsFromImage(image);
                 InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
-                Read();
+                Read_new();
                 return image;
             }
             catch (Exception ex)
@@ -148,14 +148,17 @@ namespace Imaging.Parsing
             {
                 for (int y = 0; y < customImage.Height; y++)
                 {
-                    HSVColor color = customImage.GetPixel(x, y).ToHSV();
-                    color.Value = 0.5f;
+                    Color rgb_color = customImage.GetPixel(x, y);
 
-                    HSLColor hsl_color = customImage.GetPixel(x, y).ToHSL();
+                    HSLColor hsl_color = rgb_color.ToHSL();
                     if (hsl_color.Luminosity <= 0.05f)
                         colorCorrection.SetPixel(x, y, Color.Black);
                     else
-                        colorCorrection.SetPixel(x, y, color.ToRGB().ToGrayscale());
+                    {
+                        HSVColor hsv_color = rgb_color.ToHSV();
+                        hsv_color.Value = 0.5f;
+                        colorCorrection.SetPixel(x, y, hsv_color.ToRGB().ToGrayscale());
+                    }
                 }
             }
 
@@ -168,6 +171,7 @@ namespace Imaging.Parsing
 
             // Crop the actual image
             customImage.Crop(top, customImage.Height - bottom, left, customImage.Width - right);
+            customImage.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
 
             binImg.Crop(top, binImg.Height - bottom, left, binImg.Width - right);
             //binImg.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
@@ -196,29 +200,64 @@ namespace Imaging.Parsing
             if (blackPixelsFirstRow.Count == 0)
                 return;
 
-            int rotation = 0;
+            int horizontal = 0, vertical = 0;
             if (blackPixelsFirstRow[0].X < binImg.Width / 2)
             {
-                rotation = GetRotationHeightRight();
+                GetRotationHeightRight(out horizontal, out vertical);
             }
             else if (blackPixelsFirstRow[blackPixelsFirstRow.Count - 1].X > binImg.Width / 2)
             {
-                rotation = GetRotationHeightLeft();
+                GetRotationHeightLeft(out horizontal, out vertical);
             }
 
-            customImage.Shear(rotation / 2);
 
-            customImage.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
+
+            customImage.Shear(horizontal, vertical);
+            Crop();
+
+            //customImage.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
         }
 
-        private int GetRotationHeightRight()
+        private void GetRotationHeightRight(out int h, out int v)
         {
-            return -50;
+            Color current = Color.FromArgb(255, 255, 255);
+            int vertical = 0;
+            while (current.Name == "ffffffff")
+            {
+                current = binImg.GetPixel(binImg.Width - binImg.Width / 20, vertical);
+                vertical++;
+            }
+
+            current = Color.FromArgb(255, 255, 255);
+            int horizontal = 0;
+            while (current.Name == "ffffffff")
+            {
+                current = binImg.GetPixel(horizontal, binImg.Width / 20);
+                horizontal++;
+            }
+            v = -vertical;
+            h = -horizontal;
         }
 
-        private int GetRotationHeightLeft()
+        private void GetRotationHeightLeft(out int h, out int v)
         {
-            return 10;
+            Color current = Color.FromArgb(255, 255, 255);
+            int vertical = 0;
+            while (current.Name == "ffffffff")
+            {
+                current = binImg.GetPixel(binImg.Width / 20, vertical);
+                vertical++;
+            }
+
+            current = Color.FromArgb(255, 255, 255);
+            int horizontal = 0;
+            while (current.Name == "ffffffff")
+            {
+                current = binImg.GetPixel(horizontal, binImg.Height - binImg.Width / 20);
+                horizontal++;
+            }
+            v = vertical;
+            h = horizontal;
         }
 
         private void ChangeBrightnessAndContrast()
@@ -260,7 +299,48 @@ namespace Imaging.Parsing
                 if (y > bmp.Height) break;
             }
 
-            ImageFromList(pixels);
+            ImageFromList(pixels, 0);
+        }
+
+        private void Read_new()
+        {
+            //Bitmap bmp = new Bitmap(image);
+            List<Color> pixels = new List<Color>();
+            List<Color> pixels2 = new List<Color>();
+            int step = customImage.Width / pixelsPerRow;
+            int steps = 0;
+            int x = step / 2;
+            int y = x;
+
+            while (true)
+            {
+                Color color = customImage.GetPixel(x, y);
+                pixels.Add(correctColor(color));
+                HSLColor hsl_col = color.ToHSL();
+                if (hsl_col.Saturation < 0.5f && hsl_col.Luminosity < 0.5f)
+                    pixels2.Add(Color.Black);
+                else if (hsl_col.Saturation < 0.5f)
+                    pixels2.Add(Color.White);
+                else
+                {
+                    DataColors col = color.GetHue();
+                    pixels2.Add(col);
+                }
+
+                x += step;
+                steps++;
+                if (steps > pixelsPerRow - 1)
+                {
+                    y += step;
+                    x = step / 2;
+                    steps = 0;
+                }
+                if (y > customImage.Height) break;
+            }
+
+            ImageFromList(pixels, 0);
+            ImageFromList(pixels2, 1);
+
         }
 
         private Color correctColor(Color color)
@@ -312,21 +392,39 @@ namespace Imaging.Parsing
             return (int)(v + 1);
         }
 
-        private void ImageFromList(List<Color> list)
+        private void ImageFromList(List<Color> list, int i)
         {
-            Bitmap img = new Bitmap(pixelsPerRow, ((int)(list.Count / pixelsPerRow)));
+            CustomImage img = new CustomImage(pixelsPerRow, list.Count / pixelsPerRow);
 
             int pixel = 0;
             for (int y = 0; y < img.Height; y++)
             {
                 for (int x = 0; x < img.Width; x++)
                 {
-                    img.SetPixel(x, y, list.ElementAt(pixel));
-                    if (pixel == list.Count - 1) break;
-                    else pixel++;
+                    if (pixel < list.Count)
+                    {
+                        img.SetPixel(x, y, list[pixel]);
+                        pixel++;
+                    }
+                    else
+                        img.SetPixel(x, y, Color.Transparent);
                 }
-                if (pixel > list.Count) break;
             }
+
+            img.GetDrawableImageScaled(10).Save(@"D:\Developments\Git\TheArtOfData\Test images\putput" + i + ".jpg");
+            //Bitmap img = new Bitmap(pixelsPerRow, ((int)(list.Count / pixelsPerRow)));
+
+            //int pixel = 0;
+            //for (int y = 0; y < img.Height; y++)
+            //{
+            //    for (int x = 0; x < img.Width; x++)
+            //    {
+            //        img.SetPixel(x, y, list.ElementAt(pixel));
+            //        if (pixel == list.Count - 1) break;
+            //        else pixel++;
+            //    }
+            //    if (pixel > list.Count) break;
+            //}
 
             image = img;
             //image.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "i.bmp"));

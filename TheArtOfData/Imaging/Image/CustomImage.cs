@@ -367,12 +367,55 @@ namespace Imaging
             }
         }
 
-        public void Shear(int amount)
+        public void Shear(int horizontal, int vertical)
         {
-            uint[] shearedImage = new uint[(width + Math.Abs(amount)) * (height + Math.Abs(amount))];
+            uint[] shearedImage = (uint[])pixels.Clone();
 
-            float stepLength = 1 / ((float)width / (Math.Abs(amount) * 2));
+            HorizontalShear(ref shearedImage, horizontal);
+            VerticalShear(ref shearedImage, vertical);
+
+            pixels = shearedImage;
+        }
+
+        private uint[] GetEmptySet(int size, uint defaultValue)
+        {
+            uint[] pixels = new uint[size];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = defaultValue;
+            }
+
+            return pixels;
+        }
+
+        private void HorizontalShear(ref uint[] shearedImage, int amount)
+        {
+            float stepLengthY = -1 / ((float)height / (Math.Abs(amount)));
+            float correction = amount;
+            uint[] newPixels = GetEmptySet(width * height, ConvertColorToInt(Color.White));
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int pixelToFetch = y * width + x + (int)correction;
+                    if (pixelToFetch > pixels.Length - 1 || pixelToFetch < 0)
+                        continue;
+                    newPixels[y * width + x] = shearedImage[pixelToFetch];
+                }
+
+                correction += stepLengthY;
+            }
+
+            shearedImage = newPixels.Skip((int)Math.Abs(amount * 1.5f)).Concat(GetEmptySet((int)Math.Abs(amount * 1.5f), ConvertColorToInt(Color.White))).ToArray();
+        }
+
+        private void VerticalShear(ref uint[] shearedImage, int amount)
+        {
+            float stepLengthX = 1 / ((float)width / (Math.Abs(amount)));
             float correction = 0;
+            uint[] newPixels = GetEmptySet(width * height, ConvertColorToInt(Color.White));
+
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -380,13 +423,13 @@ namespace Imaging
                     int pixelToFetch = (y + (int)correction) * width + x;
                     if (pixelToFetch > pixels.Length)
                         continue;
-                    shearedImage[y * width + x] = pixels[pixelToFetch];
+                    newPixels[y * width + x] = shearedImage[pixelToFetch];
                 }
 
-                correction += stepLength;
+                correction += stepLengthX;
             }
 
-            pixels = shearedImage;
+            shearedImage = newPixels;
         }
 
         private void ParseGDImage(Image source)
