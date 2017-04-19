@@ -14,13 +14,14 @@ namespace Imaging.Helpers
         public static readonly DataColors Red = new DataColors(0);
         public static readonly DataColors Blue = new DataColors(1);
         public static readonly DataColors Green = new DataColors(2);
-        public static readonly DataColors Black = new DataColors(3);
+        //public static readonly DataColors Black = new DataColors(3);
+        public static readonly DataColors Yellow = new DataColors(3);
         public static readonly DataColors Magenta = new DataColors(4);
         public static readonly DataColors Cyan = new DataColors(5);
         public static readonly DataColors Orange = new DataColors(6);
-        public static readonly DataColors Gray = new DataColors(7);
-        public static readonly DataColors Grey = new DataColors(7);
-        public static readonly DataColors Purple = new DataColors(8);
+        public static readonly DataColors Purple = new DataColors(7);
+        //public static readonly DataColors Gray = new DataColors(7);
+        //public static readonly DataColors Grey = new DataColors(7);
 
         private int value;
         private float min;
@@ -49,7 +50,7 @@ namespace Imaging.Helpers
 
         private void GetRange()
         {
-            switch(value)
+            switch (value)
             {
                 case 0:
                     min = 360 - 15;
@@ -64,7 +65,7 @@ namespace Imaging.Helpers
                     max = 95 + 30;
                     break;
                 case 3:
-                    
+
                     break;
                 case 4:
                     min = 360 - 65;
@@ -112,26 +113,26 @@ namespace Imaging.Helpers
         {
             if (dc == null)
                 return Color.White;
+
+            float s = 1, v = 1;
             switch (dc.value)
             {
                 case 0:
-                    return Color.FromArgb(255, 0, 0);
+                    return new HSVColor(0, s, v).ToRGB();
                 case 1:
-                    return Color.FromArgb(0, 0, 255);
+                    return new HSVColor(240, s, v).ToRGB();
                 case 2:
-                    return Color.FromArgb(0, 128, 0);
+                    return new HSVColor(120, s, v).ToRGB();
                 case 3:
-                    return Color.FromArgb(0, 0, 0);
+                    return new HSVColor(60, s, v).ToRGB();
                 case 4:
-                    return Color.FromArgb(255, 0, 255);
+                    return new HSVColor(315, s, v).ToRGB();
                 case 5:
-                    return Color.FromArgb(0, 255, 255);
+                    return new HSVColor(175, s, v).ToRGB();
                 case 6:
-                    return Color.FromArgb(255, 165, 0);
+                    return new HSVColor(25, s, v).ToRGB();
                 case 7:
-                    return Color.FromArgb(128, 128, 128);
-                case 8:
-                    return Color.FromArgb(160, 115, 255);
+                    return new HSVColor(275, s, v).ToRGB();
                 default:
                     return Color.White;
             }
@@ -143,20 +144,18 @@ namespace Imaging.Helpers
                 return new DataColors(0);
             else if (c == Color.FromArgb(0, 0, 255))
                 return new DataColors(1);
-            else if (c == Color.FromArgb(0, 128, 0))
+            else if (c == Color.FromArgb(0, 255, 0))
                 return new DataColors(2);
-            else if (c == Color.FromArgb(0, 0, 0))
+            else if (c == Color.FromArgb(255,255, 0))
                 return new DataColors(3);
-            else if (c == Color.FromArgb(255, 0, 255))
+            else if (c == Color.FromArgb(255, 0, 191))
                 return new DataColors(4);
-            else if (c == Color.FromArgb(0, 255, 255))
+            else if (c == Color.FromArgb(0, 255, 234))
                 return new DataColors(5);
-            else if (c == Color.FromArgb(255, 165, 0))
+            else if (c == Color.FromArgb(255, 106, 0))
                 return new DataColors(6);
-            else if (c == Color.FromArgb(128, 128, 128))
+            else if (c == Color.FromArgb(149, 0, 255))
                 return new DataColors(7);
-            else if (c == Color.FromArgb(160, 115, 255))
-                return new DataColors(8);
             else
                 return new DataColors(-1);
         }
@@ -181,13 +180,17 @@ namespace Imaging.Helpers
                 return 1;
             else if (Between(hue, 83, 143))
                 return 2;
+            else if (Between(hue, 47, 65))
+                return 3;
             else if (Between(hue, 287, 332))
                 return 4;
             else if (Between(hue, 151, 190))
                 return 5;
             else if (Between(hue, 19, 66))
                 return 6;
-            else return 4;
+            else if (Between(hue, 265, 285))
+                return 7;
+            else return -1;
         }
 
         private static bool Between(float value, float min, float max)

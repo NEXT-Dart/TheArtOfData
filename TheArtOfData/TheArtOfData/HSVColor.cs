@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Imaging.Helpers
+namespace TheArtOfData
 {
     class HSVColor
     {
@@ -25,9 +25,9 @@ namespace Imaging.Helpers
 
         public HSVColor(float h, float s, float v)
         {
-            this.h = h;
-            this.s = s;
             this.v = v;
+            this.s = s;
+            this.h = h;
         }
 
         public float Hue

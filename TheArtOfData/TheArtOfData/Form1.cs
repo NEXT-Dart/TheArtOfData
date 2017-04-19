@@ -37,6 +37,10 @@ namespace TheArtOfData
         private object __timestampLock;
         private Thread _thread;
         private Dictionary<Type, Control> controls;
+        private Dictionary<Control, DateTime> updateTime;
+        private List<ArtControlLink> artGenerators;
+
+        private int selectedTab = 0;
 
         public Form1()
         {
@@ -44,20 +48,69 @@ namespace TheArtOfData
 
             instance = this;
             __timestampLock = new object();
+            updateTime = new Dictionary<Control, DateTime>();
 
-            controls = new Dictionary<Type, Control>();
-            controls.Add(typeof(ImageDataWriter), pictureBox1);
-            controls.Add(typeof(MondriaanArtGenerator), pictureBox2);
+            //controls = new Dictionary<Type, Control>();
+            //controls.Add(typeof(ImageDataWriter), pictureBox1);
+            //controls.Add(typeof(MondriaanArtGenerator), pictureBox2);
             //controls.Add(typeof(MosaicArtGenerator), pictureBox3);
         }
 
         public void RedrawImage(int colorsPerRow, byte[] data)
         {
-            ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator));//, typeof(MosaicArtGenerator));
-            if (_thread != null && _thread.IsAlive)
-                _thread.Abort();
-            _thread = new Thread(ExecuteThread);
-            _thread.Start(ir);
+            //ImageResult ir = new ImageResult(data, colorsPerRow, typeof(MondriaanArtGenerator), typeof(MosaicArtGenerator));
+            //if (_thread != null && _thread.IsAlive)
+            //    _thread.Abort();
+            //_thread = new Thread(ExecuteThread);
+            //_thread.Start(ir);
+        }
+
+        private void RedrawImages()
+        {
+            Thread thread = new Thread(ExecuteImageThead);
+            thread.Start();
+        }
+
+        private void ExecuteImageThead()
+        {
+            artGenerators = new List<ArtControlLink>();
+            
+            if (selectedTab == 0)
+                artGenerators.Add(new ArtControlLink(UpdateTimeOnControl, pictureBox1, typeof(NormalArtGenerator), (int)numericUpDown1.Value));
+            if (selectedTab == 1)
+                artGenerators.Add(new ArtControlLink(UpdateTimeOnControl, pictureBox2, typeof(MondriaanArtGenerator)));
+            if (selectedTab == 2)
+                artGenerators.Add(new ArtControlLink(UpdateTimeOnControl, pictureBox3, typeof(MosaicArtGenerator)));
+            if (selectedTab == 3)
+                artGenerators.Add(new ArtControlLink(UpdateTimeOnControl, pictureBox4, typeof(OctagonArtGenerator), (int)numericUpDown1.Value, pictureBox4.Width, pictureBox4.Height));
+            if (PopOut.InstanceActive)
+                artGenerators.Add(new ArtControlLink(UpdateTimeOnControl, PopOut.INSTANCE.pictureBox1, typeof(NormalArtGenerator), (int)numericUpDown1.Value));
+
+            foreach (ArtControlLink generator in artGenerators)
+            {
+                generator.Invoke(Encoding.ASCII.GetBytes(textBox1.Text));
+            }
+        }
+
+        private bool UpdateTimeOnControl(Control control, DateTime time)
+        {
+            if (updateTime.ContainsKey(control))
+            {
+                DateTime oldTime;
+                updateTime.TryGetValue(control, out oldTime);
+                if (time > oldTime)
+                {
+                    updateTime[control] = time;
+                    return true;
+                }
+            }
+            else
+            {
+                updateTime.Add(control, time);
+                return true;
+            }
+
+            return false;
         }
 
         private void ExecuteThread(object data)
@@ -97,12 +150,25 @@ namespace TheArtOfData
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            RedrawImage((int)numericUpDown1.Value, Encoding.ASCII.GetBytes(textBox1.Text));
+            //RedrawImage((int)numericUpDown1.Value, Encoding.ASCII.GetBytes(textBox1.Text));
+            RedrawImages();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             PopOut.INSTANCE.Show();
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            //RedrawImage((int)numericUpDown1.Value, Encoding.ASCII.GetBytes(textBox1.Text));
+            RedrawImages();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedTab = tabControl1.SelectedIndex;
+            RedrawImages();
         }
     }
 }

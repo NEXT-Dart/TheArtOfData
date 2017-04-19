@@ -71,13 +71,31 @@ namespace TheArtOfData.Art
             }
         }
 
-        public override CustomImage GetImage()
+        private void Flush()
+        {
+            while (currentByte.Length > TintedColor.bits)
+            {
+                string bits = currentByte.Substring(0, TintedColor.bits);
+                currentByte = currentByte.Remove(0, TintedColor.bits);
+                colors.Add(Convert.ToInt32(bits, 2));
+            }
+
+            if (currentByte.Length > 0 )
+            {
+                string bits = currentByte;
+                currentByte = "";
+                colors.Add(Convert.ToInt32(bits, 2));
+            }
+        }
+
+        public override CustomImage GetImage(object[] values)
         {
             const int bitmapSize = 500;
             int width = (int)(Math.Sqrt(data.Count * 8 / TintedColor.bits) + 1);
             int height = width + 1;
             int pixelSize = bitmapSize / width;
-            Bitmap bitmap = new Bitmap(width * pixelSize, height * pixelSize);
+            CustomImage bitmap = new CustomImage(width * pixelSize, height * pixelSize);
+            //Bitmap bitmap = new Bitmap(width * pixelSize, height * pixelSize);
 
             int x = 0, y = 0;
             int margin = (int)(pixelSize * 0.05f);
@@ -98,7 +116,9 @@ namespace TheArtOfData.Art
                 }
             }
 
-            return new CustomImage((Image)bitmap);// ImageDataWriter.TrimBitmap(bitmap);
+            //return new CustomImage((Image)bitmap);// ImageDataWriter.TrimBitmap(bitmap);
+            bitmap.Optimize();
+            return bitmap;
         }
 
         #endregion

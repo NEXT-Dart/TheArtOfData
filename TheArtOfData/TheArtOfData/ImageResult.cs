@@ -54,24 +54,24 @@ namespace TheArtOfData
 
         public void Execute()
         {
-            idw = new ImageDataWriter();
-            idw.AddBytes(data);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            image.Add(typeof(ImageDataWriter), idw.GetImage(colorsPerRow));
-            sw.Stop();
-            Debug.WriteLine("Normal: " + sw.ElapsedMilliseconds + " ms");
+            //idw = new ImageDataWriter();
+            //idw.AddBytes(data);
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            //image.Add(typeof(ImageDataWriter), idw.GetImage(colorsPerRow));
+            //sw.Stop();
+            //Debug.WriteLine("Normal: " + sw.ElapsedMilliseconds + " ms");
 
-            foreach (Type type in outputTypes)
-            {
-                sw = new Stopwatch();
-                sw.Start();
-                ArtGenerator gen = Activator.CreateInstance(type) as ArtGenerator;
-                gen.AddBytes(data);
-                image.Add(type, gen.GetImage());
-                sw.Stop();
-                Debug.WriteLine(type.Name + ": " + sw.ElapsedMilliseconds + " ms");
-            }
+            //foreach (Type type in outputTypes)
+            //{
+            //    sw = new Stopwatch();
+            //    sw.Start();
+            //    ArtGenerator gen = Activator.CreateInstance(type) as ArtGenerator;
+            //    gen.AddBytes(data);
+            //    image.Add(type, gen.GetImage());
+            //    sw.Stop();
+            //    Debug.WriteLine(type.Name + ": " + sw.ElapsedMilliseconds + " ms");
+            //}
         }
 
         #endregion

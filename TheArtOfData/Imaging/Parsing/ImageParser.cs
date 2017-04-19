@@ -174,7 +174,7 @@ namespace Imaging.Parsing
             customImage.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
 
             binImg.Crop(top, binImg.Height - bottom, left, binImg.Width - right);
-            //binImg.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\output.jpg");
+            //binImg.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\outputbin.jpg");
 
             // Set some debug information
             InterlaceData.INSTANCE.StartPosition = new Point(left, top);
@@ -316,10 +316,8 @@ namespace Imaging.Parsing
             {
                 Color color = customImage.GetPixel(x, y);
                 pixels.Add(correctColor(color));
-                HSLColor hsl_col = color.ToHSL();
-                if (hsl_col.Saturation < 0.5f && hsl_col.Luminosity < 0.5f)
-                    pixels2.Add(Color.Black);
-                else if (hsl_col.Saturation < 0.5f)
+                float b = color.GetBrightness(), s = color.GetSaturation();
+                if (b == 1f && s == 0f)
                     pixels2.Add(Color.White);
                 else
                 {
@@ -350,11 +348,12 @@ namespace Imaging.Parsing
             colors.Add(DataColors.Red);
             colors.Add(DataColors.Blue);
             colors.Add(DataColors.Green);
-            colors.Add(DataColors.Black);
+            colors.Add(DataColors.Yellow);
+            //colors.Add(DataColors.Black);
             colors.Add(DataColors.Magenta);
             colors.Add(DataColors.Cyan);
             colors.Add(DataColors.Orange);
-            colors.Add(DataColors.Gray);
+            //colors.Add(DataColors.Gray);
             colors.Add(DataColors.Purple);
             colors.Add(Color.White);
 

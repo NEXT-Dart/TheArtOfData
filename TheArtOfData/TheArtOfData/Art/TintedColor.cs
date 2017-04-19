@@ -9,14 +9,37 @@ namespace TheArtOfData.Art
 {
     class TintedColor
     {
-        public const int totalTints = 8;
-        public const int bits = 3;
+        public static int totalTints;
+        public const int bits = 4;
 
         public static Color Get(int value)
         {
-            float step = 255f / totalTints;
-            int current = (int)(step * value);
-            return Color.FromArgb(0, current, 0);
+            CalculateTotalTints();
+
+            float step = 128f / (totalTints / 2);
+            int g = 0;
+            int rb = 0;
+            if (value <= totalTints / 2)
+            {
+                g = (int)step * value+ 127;
+            }
+            else
+            {
+                rb = (int)step * (value - (int)(totalTints / 2));
+                g = 255;
+            }
+            return Color.FromArgb(rb, g, rb);
+        }
+
+        private static void CalculateTotalTints()
+        {
+            string bytes = "";
+            for (int i = 0; i < bits; i++)
+            {
+                bytes += "1";
+            }
+
+            totalTints = Convert.ToInt32(bytes, 2) + 1;
         }
     }
 }

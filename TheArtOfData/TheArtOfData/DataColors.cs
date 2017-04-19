@@ -14,12 +14,16 @@ namespace TheArtOfData
         public static readonly DataColors Red = new DataColors(0);
         public static readonly DataColors Blue = new DataColors(1);
         public static readonly DataColors Green = new DataColors(2);
-        public static readonly DataColors Black = new DataColors(3);
+        //public static readonly DataColors Black = new DataColors(3);
+        public static readonly DataColors Yellow = new DataColors(3);
         public static readonly DataColors Magenta = new DataColors(4);
         public static readonly DataColors Cyan = new DataColors(5);
         public static readonly DataColors Orange = new DataColors(6);
-        public static readonly DataColors Gray = new DataColors(7);
-        public static readonly DataColors Grey = new DataColors(7);
+        public static readonly DataColors Purple = new DataColors(7);
+        //public static readonly DataColors Gray = new DataColors(7);
+        //public static readonly DataColors Grey = new DataColors(7);
+
+        private static Random rand = new Random();
 
         private int value;
 
@@ -68,24 +72,26 @@ namespace TheArtOfData
 
         public static implicit operator Color(DataColors dc)
         {
+            float s = rand.Next(500, 1000) / 1000f;
+            float v = rand.Next(500, 1000) / 1000f;
             switch (dc.value)
             {
                 case 0:
-                    return Color.FromArgb(255, 0, 0);
+                    return new HSVColor(0, s, v).ToRGB();
                 case 1:
-                    return Color.FromArgb(0, 0, 255);
+                    return new HSVColor(240, s, v).ToRGB();
                 case 2:
-                    return Color.FromArgb(0, 128, 0);
+                    return new HSVColor(120, s, v).ToRGB();
                 case 3:
-                    return Color.FromArgb(0, 0, 0);
+                    return new HSVColor(60, s, v).ToRGB();
                 case 4:
-                    return Color.FromArgb(255, 0, 255);
+                    return new HSVColor(315, s, v).ToRGB();
                 case 5:
-                    return Color.FromArgb(0, 255, 255);
+                    return new HSVColor(175, s, v).ToRGB();
                 case 6:
-                    return Color.FromArgb(255, 165, 0);
+                    return new HSVColor(25, s, v).ToRGB();
                 case 7:
-                    return Color.FromArgb(128, 128, 128);
+                    return new HSVColor(275, s, v).ToRGB();
                 default:
                     return Color.White;
             }

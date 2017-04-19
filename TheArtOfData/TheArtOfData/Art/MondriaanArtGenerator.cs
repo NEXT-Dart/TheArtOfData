@@ -174,7 +174,7 @@ namespace TheArtOfData.Art
             //return ig.CreateBitmap();
         }
 
-        public override CustomImage GetImage()
+        public override CustomImage GetImage(object[] values)
         {
             if (data.Count == 0)
                 return new CustomImage(1, 1);

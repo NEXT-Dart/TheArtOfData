@@ -41,7 +41,7 @@ namespace TheArtOfData.Art
 
         public abstract void AddBytes(byte[] data);
 
-        public abstract CustomImage GetImage();
+        public abstract CustomImage GetImage(object[] values);
 
         #endregion
 

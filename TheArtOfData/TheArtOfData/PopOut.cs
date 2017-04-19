@@ -31,6 +31,11 @@ namespace TheArtOfData
             }
         }
 
+        public static bool InstanceActive
+        {
+            get { return instance != null; }
+        }
+
         #endregion
 
         private void PopOut_Resize(object sender, EventArgs e)

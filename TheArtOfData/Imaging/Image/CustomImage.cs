@@ -479,6 +479,30 @@ namespace Imaging
             bmp.UnlockBits(bmpData);
         }
 
+        public void Scale(int scale)
+        {
+            CustomImage newImage = new CustomImage(width * scale, height * scale);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int newX = x * scale; newX < x * scale + scale; newX++)
+                    {
+                        for (int newY = y * scale; newY < y * scale + scale; newY++)
+                        {
+                            newImage.pixels[newY * newImage.width + newX] = pixels[y * width + x];
+                            //newImage.SetPixel(newX, newY, GetPixel(x, y));
+                        }
+                    }
+                }
+            }
+
+            pixels = newImage.pixels;
+            width = newImage.width;
+            height = newImage.height;
+        }
+
         /// <summary>
         /// Optimizes the image (removes all transparent pixels where possible
         /// </summary>
