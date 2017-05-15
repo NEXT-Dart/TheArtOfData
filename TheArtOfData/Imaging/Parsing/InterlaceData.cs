@@ -17,7 +17,7 @@ namespace Imaging.Parsing
         public int TotalImageWidth;
         public int PixelWidth;
         public List<DataColors> Colors;
-        public Rectangle CropInfo;
+        public System.Drawing.Rectangle CropInfo;
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace Imaging.Parsing
             StartPosition = new Point(0, 0);
             PixelWidth = 50;
             PixelsPerRow = 10;
-            CropInfo = new Rectangle(0, 0, 1, 1);
+            CropInfo = new System.Drawing.Rectangle(0, 0, 1, 1);
             Colors = new List<DataColors>();
         }
 

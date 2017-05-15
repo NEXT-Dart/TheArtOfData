@@ -124,6 +124,42 @@ namespace Imaging
             return merged;
         }
 
+        public void FindCorners(Point rotation, ref Point tl, ref Point tr, ref Point bl, ref Point br)
+        {
+            if (rotation.Y < 0)
+            {
+                FindCornersRight(ref tl, ref tr, ref bl, ref br);
+            }
+            else
+                FindCornersLeft(ref tl, ref tr, ref bl, ref br);
+        }
+
+        private void FindCornersRight(ref Point tl, ref Point tr, ref Point bl, ref Point br)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (GetPixel(x, y) == Color.FromArgb(0, 0, 0))
+                    {
+                        if (x <= tl.X && y <= tl.Y)
+                            tl = new Point(x, y);
+                        else if (x >= tr.X && y <= tr.Y)
+                            tr = new Point(x, y);
+                        else if (x <= bl.X && y >= bl.Y)
+                            bl = new Point(x, y);
+                        else if (x >= br.X && y >= br.Y)
+                            br = new Point(x, y);
+                    }
+                }
+            }
+        }
+
+        private void FindCornersLeft(ref Point tl, ref Point tr, ref Point bl, ref Point br)
+        {
+
+        }
+
         #endregion
 
         #region "Abstract/Virtual Methods"

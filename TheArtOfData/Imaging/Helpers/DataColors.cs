@@ -12,16 +12,13 @@ namespace Imaging.Helpers
         #region "Fields"
 
         public static readonly DataColors Red = new DataColors(0);
-        public static readonly DataColors Blue = new DataColors(1);
-        public static readonly DataColors Green = new DataColors(2);
-        //public static readonly DataColors Black = new DataColors(3);
-        public static readonly DataColors Yellow = new DataColors(3);
-        public static readonly DataColors Magenta = new DataColors(4);
-        public static readonly DataColors Cyan = new DataColors(5);
-        public static readonly DataColors Orange = new DataColors(6);
-        public static readonly DataColors Purple = new DataColors(7);
-        //public static readonly DataColors Gray = new DataColors(7);
-        //public static readonly DataColors Grey = new DataColors(7);
+        public static readonly DataColors Orange = new DataColors(1);
+        public static readonly DataColors Yellow = new DataColors(2);
+        public static readonly DataColors Green = new DataColors(3);
+        public static readonly DataColors Cyan = new DataColors(4);
+        public static readonly DataColors Blue = new DataColors(5);
+        public static readonly DataColors Purple = new DataColors(6);
+        public static readonly DataColors Magenta = new DataColors(7);
 
         private int value;
         private float min;
@@ -42,7 +39,15 @@ namespace Imaging.Helpers
 
         #region "Properties"
 
+        public float Min
+        {
+            get { return min; }
+        }
 
+        public float Max
+        {
+            get { return max; }
+        }
 
         #endregion
 
@@ -53,34 +58,36 @@ namespace Imaging.Helpers
             switch (value)
             {
                 case 0:
-                    min = 360 - 15;
-                    max = 15;
+                    min = 340;
+                    max = 10;
                     break;
                 case 1:
-                    min = 360 - 135;
-                    max = 360 - 105;
+                    min = 10;
+                    max = 40;
                     break;
                 case 2:
-                    min = 95;
-                    max = 95 + 30;
+                    min = 40;
+                    max = 75;
                     break;
                 case 3:
-
+                    min = 75;
+                    max = 150;
                     break;
                 case 4:
-                    min = 360 - 65;
-                    max = 360 - 35;
+                    min = 150;
+                    max = 200;
                     break;
                 case 5:
-                    min = 360 - 155;
-                    max = 165;
+                    min = 200;
+                    max = 245;
                     break;
                 case 6:
-                    min = 50;
-                    max = 70;
+                    min = 250;
+                    max = 280;
                     break;
                 case 7:
-
+                    min = 280;
+                    max = 340;
                     break;
                 case 8:
                     break;
@@ -97,7 +104,30 @@ namespace Imaging.Helpers
 
         #region "Inherited Methods"
 
-
+        public override string ToString()
+        {
+            switch(value)
+            {
+                case 0:
+                    return "Red";
+                case 1:
+                    return "Orange";
+                case 2:
+                    return "Yellow";
+                case 3:
+                    return "Green";
+                case 4:
+                    return "Cyan";
+                case 5:
+                    return "Blue";
+                case 6:
+                    return "Purple";
+                case 7:
+                    return "Magenta";
+                default:
+                    return "";
+            }
+        }
 
         #endregion
 
@@ -111,8 +141,8 @@ namespace Imaging.Helpers
 
         public static implicit operator Color(DataColors dc)
         {
-            if (dc == null)
-                return Color.White;
+            //if (dc == null)
+            //    return Color.White;
 
             float s = 1, v = 1;
             switch (dc.value)
@@ -120,19 +150,19 @@ namespace Imaging.Helpers
                 case 0:
                     return new HSVColor(0, s, v).ToRGB();
                 case 1:
-                    return new HSVColor(240, s, v).ToRGB();
-                case 2:
-                    return new HSVColor(120, s, v).ToRGB();
-                case 3:
-                    return new HSVColor(60, s, v).ToRGB();
-                case 4:
-                    return new HSVColor(315, s, v).ToRGB();
-                case 5:
-                    return new HSVColor(175, s, v).ToRGB();
-                case 6:
                     return new HSVColor(25, s, v).ToRGB();
-                case 7:
+                case 2:
+                    return new HSVColor(60, s, v).ToRGB();
+                case 3:
+                    return new HSVColor(120, s, v).ToRGB();
+                case 4:
+                    return new HSVColor(175, s, v).ToRGB();
+                case 5:
+                    return new HSVColor(240, s, v).ToRGB();
+                case 6:
                     return new HSVColor(275, s, v).ToRGB();
+                case 7:
+                    return new HSVColor(315, s, v).ToRGB();
                 default:
                     return Color.White;
             }
@@ -167,28 +197,28 @@ namespace Imaging.Helpers
 
         public static implicit operator int(DataColors dc)
         {
-            if (dc == null)
-                return -1;
+            //if (dc == null)
+            //    return -1;
             return dc.value;
         }
 
         public static implicit operator DataColors(float hue)
         {
-            if (Between(hue, 345, 9))
+            if (Between(hue, 340, 10))
                 return 0;
-            else if (Between(hue, 218, 251))
+            else if (Between(hue, 10, 40))
                 return 1;
-            else if (Between(hue, 83, 143))
+            else if (Between(hue, 40, 75))
                 return 2;
-            else if (Between(hue, 47, 65))
+            else if (Between(hue, 75, 150))
                 return 3;
-            else if (Between(hue, 287, 332))
+            else if (Between(hue, 150, 200))
                 return 4;
-            else if (Between(hue, 151, 190))
+            else if (Between(hue, 200, 245))
                 return 5;
-            else if (Between(hue, 19, 66))
+            else if (Between(hue, 245, 280))
                 return 6;
-            else if (Between(hue, 265, 285))
+            else if (Between(hue, 280, 340))
                 return 7;
             else return -1;
         }
@@ -198,6 +228,26 @@ namespace Imaging.Helpers
             if (min > max)
                 return value >= min || value <= max;
             return value >= min && value <= max;
+        }
+
+        public static bool operator ==(DataColors left, DataColors right)
+        {
+            return left.value == right.value;
+        }
+
+        public static bool operator !=(DataColors left, DataColors right)
+        {
+            return !(left.value == right.value);
+        }
+
+        public static bool operator ==(Color left, DataColors right)
+        {
+            return (DataColors)left == right;
+        }
+
+        public static bool operator !=(Color left, DataColors right)
+        {
+            return !(left == right);
         }
 
         #endregion

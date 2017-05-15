@@ -101,7 +101,14 @@ namespace Imaging
         public void SetPixel(int x, int y, Color color)
         {
             uint iColor = ConvertColorToInt(color);
-            pixels[y * width + x] = iColor;
+            try
+            {
+                pixels[y * width + x] = iColor;
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -582,6 +589,9 @@ namespace Imaging
         /// <param name="right">The amount of pixel to cut from the right</param>
         public void Crop(int top, int bottom, int left, int right)
         {
+            if (top == 0 && bottom == 0 && left == 0 && right == 0)
+                return;
+
             CustomImage cropped = new CustomImage(width - left - right, height - top - bottom);
             int newX = 0, newY = 0;
             for (int y = top; y < height - bottom; y++)

@@ -49,12 +49,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\CountingBoolean.cs" />
     <Compile Include="Helpers\ColorExtension.cs" />
     <Compile Include="Helpers\HSVColor.cs" />
+    <Compile Include="Helpers\Rectangle.cs" />
     <Compile Include="Image\CustomBinaryImage.cs" />
     <Compile Include="Image\CustomImage.cs" />
     <Compile Include="Helpers\DataColors.cs" />
     <Compile Include="Helpers\HSLColor.cs" />
+    <Compile Include="Parsing\ColorArea.cs" />
+    <Compile Include="Parsing\ColorCount.cs" />
+    <Compile Include="Parsing\ColorGrid.cs" />
     <Compile Include="Parsing\ImageCrop.cs" />
     <Compile Include="Parsing\ImageDataReader.cs" />
     <Compile Include="Parsing\ImageParser.cs" />

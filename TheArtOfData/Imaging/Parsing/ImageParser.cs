@@ -8,6 +8,7 @@ using ColorMine.ColorSpaces;
 using ColorMine.ColorSpaces.Comparisons;
 using Imaging.Helpers;
 using System.Drawing.Drawing2D;
+using System.Diagnostics;
 
 namespace Imaging.Parsing
 {
@@ -16,6 +17,11 @@ namespace Imaging.Parsing
         private int pixelsPerRow = 10;
         private CustomImage customImage;
         private CustomBinaryImage binImg;
+        private Point rotation;
+        private int blockWidth;
+        private int blockHeight;
+
+        private Point topLeft, topRight, bottomLeft, bottomRight;
 
         //public Image image { get; private set; }
 
@@ -39,17 +45,46 @@ namespace Imaging.Parsing
         {
             try
             {
-                Crop();
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                CreateColorCutout();
+
+                sw.Stop();
+                Debug.WriteLine("CreateColorCutout " + sw.ElapsedMilliseconds + " ms");
+                sw.Restart();
+
+                //Crop();
                 //ChangeBrightnessAndContrast();
-                Straighten();
+                //Straighten();
                 //pixelsPerRow = GetPixelsFromImage(image);
-                InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
-                Read_new();
+
+                //ColorGrid grid = new ColorGrid(customImage, rotation);
+                //grid.ParseImageNew();
+                //grid.CreateGrid(out blockWidth, out blockHeight);
+
+                //sw.Stop();
+                //Debug.WriteLine("ParseImageNew " + sw.ElapsedMilliseconds + " ms");
+                //sw.Restart();
+
+                FindCorners();
+                DetectRaster();
+
+                sw.Stop();
+                Debug.WriteLine("FindCorners " + sw.ElapsedMilliseconds + " ms");
+                //sw.Restart();
+
+                //InterlaceData.INSTANCE.PixelsPerRow = pixelsPerRow;
+                //Read_new();
+                ////ReadCalculatedImage();
+
+                //sw.Stop();
+                //Debug.WriteLine("Read_new " + sw.ElapsedMilliseconds + " ms");
                 return image;
             }
-            catch (Exception ex)
+            catch (NotImplementedException ex)
             {
-                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+                Debug.WriteLine(ex.Message + "\n" + ex.StackTrace);
                 return null;
             }
         }
@@ -179,7 +214,7 @@ namespace Imaging.Parsing
             // Set some debug information
             InterlaceData.INSTANCE.StartPosition = new Point(left, top);
             InterlaceData.INSTANCE.TotalImageWidth = right - left;
-            InterlaceData.INSTANCE.CropInfo = new Rectangle(left, top, right - left, bottom - top);
+            InterlaceData.INSTANCE.CropInfo = new System.Drawing.Rectangle(left, top, right - left, bottom - top);
 
             //image = customImage;
         }
@@ -210,7 +245,7 @@ namespace Imaging.Parsing
                 GetRotationHeightLeft(out horizontal, out vertical);
             }
 
-
+            rotation = new Point(horizontal, vertical);
 
             customImage.Shear(horizontal, vertical);
             Crop();
@@ -384,11 +419,213 @@ namespace Imaging.Parsing
             return colorToReturn;
         }
 
+        private void CreateColorCutout()
+        {
+            CustomImage cutout = new CustomImage(customImage.Width, customImage.Height);
 
+            for (int x = 0; x < customImage.Width; x++)
+            {
+                for (int y = 0; y < customImage.Height; y++)
+                {
+                    Color pixel = customImage.GetPixel(x, y);
+                    float sat = pixel.GetSaturation();
+                    if (sat <= 0.2f)
+                        cutout.SetPixel(x, y, Color.White);
+                    else
+                        cutout.SetPixel(x, y, pixel);
+                }
+            }
+
+            cutout.Optimize(Color.White);
+            customImage = cutout;
+            binImg = cutout.GetBinaryImage(128);
+            cutout.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\cutout.png");
+        }
 
         private int doubleToIntCeiling(double v)
         {
             return (int)(v + 1);
+        }
+
+        private void FindCorners()
+        {
+            Color black = Color.FromArgb(0, 0, 0);
+
+            List<int> firstRow = new List<int>();
+            List<int> lastRow = new List<int>();
+            int top = 0;
+            int bottom = binImg.Height - 1;
+
+            for (int y = 0; y < binImg.Height; y++)
+            {
+                for (int x = 0; x < binImg.Width; x++)
+                {
+                    if (binImg.GetPixel(x, y) == black)
+                        firstRow.Add(x);
+                }
+                if (firstRow.Count > 0)
+                {
+                    top = y;
+                    break;
+                }
+            }
+
+            for (int y = binImg.Height - 1; y > 0; y--)
+            {
+                for (int x = 0; x < binImg.Width; x++)
+                {
+                    if (binImg.GetPixel(x, y) == black)
+                        lastRow.Add(x);
+                }
+                if (lastRow.Count > 0)
+                {
+                    bottom = y;
+                    break;
+                }
+            }
+
+
+            List<int> leftColumn = new List<int>();
+            List<int> rightColumn = new List<int>();
+            int left = 0, right = binImg.Width - 1;
+
+            for (int x = 0; x < binImg.Width; x++)
+            {
+                for (int y = 0; y < binImg.Height; y++)
+                {
+                    if (binImg.GetPixel(x, y) == black)
+                        leftColumn.Add(y);
+                }
+                if (leftColumn.Count > 0)
+                {
+                    left = x;
+                    break;
+                }
+            }
+
+            for (int x = binImg.Width - 1; x > 0; x--)
+            {
+                for (int y = 0; y < binImg.Height; y++)
+                {
+                    if (binImg.GetPixel(x, y) == black)
+                        rightColumn.Add(y);
+                }
+                if (rightColumn.Count > 0)
+                {
+                    right = x;
+                    break;
+                }
+            }
+
+            // Detect the rotation
+            double avg = firstRow.Average();
+            if (avg < binImg.Width / 2)
+            {
+                topLeft = new Point(firstRow.First(), top);
+                topRight = new Point(right, rightColumn.First());
+                bottomLeft = new Point(left, leftColumn.Last());
+            }
+            else if (avg > binImg.Width / 2)
+            {
+                topLeft = new Point(left, leftColumn.First());
+                topRight = new Point(firstRow.Last(), top);
+                bottomLeft = new Point(lastRow.First(), bottom);
+            }
+            else if (avg == 0)
+            {
+                topLeft = new Point(firstRow.First(), top);
+                topRight = new Point(firstRow.Last(), top);
+                bottomLeft = new Point(left, leftColumn.Last());
+            }
+
+            // Calculate the fourth corner
+            int deltaX = bottomLeft.X - topLeft.X;
+            int deltaY = topRight.Y - topLeft.Y;
+
+            bottomRight = new Point(topRight.X + deltaX, bottomLeft.Y + deltaY);
+
+            Point[] lineA = GetBresenhamLine(topRight, bottomRight);
+            Point[] lineB = GetBresenhamLine(bottomLeft, bottomRight);
+
+            foreach (Point p in lineA)
+            {
+                binImg.SetPixel(p.X, p.Y, Color.Red);
+            }
+
+            foreach (Point p in lineB)
+            {
+                binImg.SetPixel(p.X, p.Y, Color.Red);
+            }
+
+            binImg.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\binimg.png");
+        }
+
+        private void DetectRaster()
+        {
+            Point[] verticalLeftLine = GetBresenhamLine(topLeft, bottomLeft);
+            Point[] verticalRightLine = GetBresenhamLine(topRight, bottomRight);
+            Point[] horizontalBottomLine = GetBresenhamLine(bottomLeft, bottomRight);
+            Point[] horizontalTopLine = GetBresenhamLine(topLeft, topRight);
+
+            int[] primes = new int[] { 2, 3, 5, 7 };
+
+            foreach (int prime in primes)
+            {
+                int indexLeft = verticalLeftLine.Length / prime;
+                int indexRight = verticalRightLine.Length / prime;
+
+                PlotSurface(verticalLeftLine[indexLeft], verticalRightLine[indexRight]);
+            }
+
+            customImage.GetDrawableImage().Save(@"D:\Developments\Git\TheArtOfData\Test images\parsedArea.png");
+        }
+
+        private List<ColorCount> PlotSurface(Point a, Point b)
+        {
+            Point[] points = GetBresenhamLine(a, b);
+
+            List<ColorCount> colors = new List<ColorCount>();
+            ColorCount currentColor = null;
+            foreach (Point p in points)
+            {
+                Color c = customImage.GetPixel(p.X, p.Y);
+                DataColors color = c.GetHue();
+
+                if (currentColor == null || currentColor.Color != color)
+                {
+                    currentColor = new ColorCount(color);
+                    colors.Add(currentColor);
+                }
+                else if (currentColor.Color == color)
+                {
+                    currentColor++;
+                }
+
+                customImage.SetPixel(p.X, p.Y, color);
+            }
+            return null;
+        }
+
+        private Point[] GetBresenhamLine(Point start, Point end)
+        {
+            int x0 = start.X;
+            int y0 = start.Y;
+            int x1 = end.X;
+            int y1 = end.Y;
+            List<Point> line = new List<Point>();
+
+            int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+            int dy = Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+            int err = (dx > dy ? dx : -dy) / 2, e2;
+            for (;;)
+            {
+                line.Add(new Point(x0, y0));
+                if (x0 == x1 && y0 == y1) break;
+                e2 = err;
+                if (e2 > -dx) { err -= dy; x0 += sx; }
+                if (e2 < dy) { err += dx; y0 += sy; }
+            }
+            return line.ToArray();
         }
 
         private void ImageFromList(List<Color> list, int i)
