@@ -39,6 +39,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.captureTimer = new System.Windows.Forms.Timer(this.components);
+            this.button2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -60,6 +61,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.btnStartCam);
             this.panel1.Controls.Add(this.btnCameraConfig);
@@ -75,7 +77,7 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(12, 109);
+            this.checkBox1.Location = new System.Drawing.Point(12, 133);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(58, 17);
             this.checkBox1.TabIndex = 3;
@@ -161,6 +163,17 @@
             this.captureTimer.Interval = 500;
             this.captureTimer.Tick += new System.EventHandler(this.captureTimer_Tick);
             // 
+            // button2
+            // 
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(9, 104);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 46);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "Start capture";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,6 +210,7 @@
         private System.Windows.Forms.Timer captureTimer;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button button2;
     }
 }
 

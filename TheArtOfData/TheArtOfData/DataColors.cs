@@ -72,8 +72,8 @@ namespace TheArtOfData
 
         public static implicit operator Color(DataColors dc)
         {
-            float s = rand.Next(500, 1000) / 1000f;
-            float v = rand.Next(500, 1000) / 1000f;
+            float s = rand.Next(750, 1000) / 1000f;
+            float v = rand.Next(750, 1000) / 1000f;
             switch (dc.value)
             {
                 case 0:

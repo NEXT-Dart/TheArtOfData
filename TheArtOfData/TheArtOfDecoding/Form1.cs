@@ -62,7 +62,8 @@ namespace TheArtOfDecoding
 
                 pictureBox1.Paint += new PaintEventHandler(drawLatestImage);
                 _frameSource.StartFrameCapture();
-                captureTimer.Enabled = true;
+                //captureTimer.Enabled = true;
+                button2.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -216,6 +217,11 @@ namespace TheArtOfDecoding
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             pictureBox2.Visible = checkBox1.Checked;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            captureTimer.Enabled = true;
         }
     }
 }

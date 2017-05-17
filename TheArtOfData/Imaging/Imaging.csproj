@@ -60,6 +60,7 @@
     <Compile Include="Parsing\ColorArea.cs" />
     <Compile Include="Parsing\ColorCount.cs" />
     <Compile Include="Parsing\ColorGrid.cs" />
+    <Compile Include="Parsing\Grid.cs" />
     <Compile Include="Parsing\ImageCrop.cs" />
     <Compile Include="Parsing\ImageDataReader.cs" />
     <Compile Include="Parsing\ImageParser.cs" />
