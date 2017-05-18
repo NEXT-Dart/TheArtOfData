@@ -139,7 +139,7 @@ namespace Imaging.Parsing
                 }
             }
 
-            image.GetDrawableImageScaled(20).Save(@"D:\Developments\Git\TheArtOfData\Test images\parsedData.png");
+            //image.GetDrawableImageScaled(20).Save(@"D:\Developments\Git\TheArtOfData\Test images\parsedData.png");
 
             return image.GetDrawableImage();
         }

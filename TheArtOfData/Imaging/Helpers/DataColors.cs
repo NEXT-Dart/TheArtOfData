@@ -20,6 +20,8 @@ namespace Imaging.Helpers
         public static readonly DataColors Purple = new DataColors(6);
         public static readonly DataColors Magenta = new DataColors(7);
 
+        public static readonly DataColors White = new DataColors(-1);
+
         private int value;
         private float min;
         private float max;
@@ -124,6 +126,8 @@ namespace Imaging.Helpers
                     return "Purple";
                 case 7:
                     return "Magenta";
+                case -1:
+                    return "White";
                 default:
                     return "";
             }

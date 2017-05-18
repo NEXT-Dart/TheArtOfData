@@ -57,7 +57,7 @@ namespace TheArtOfDecoding
                 setFrameSource(new CameraFrameSource(c));
                 _frameSource.Camera.CaptureWidth = 480;
                 _frameSource.Camera.CaptureHeight = 320;
-                _frameSource.Camera.Fps = 60;
+                _frameSource.Camera.Fps = 30;
                 _frameSource.NewFrame += OnImageCaptured;
 
                 pictureBox1.Paint += new PaintEventHandler(drawLatestImage);

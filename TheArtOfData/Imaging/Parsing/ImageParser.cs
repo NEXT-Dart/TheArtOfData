@@ -49,7 +49,7 @@ namespace Imaging.Parsing
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                CreateColorCutout();
+                //CreateColorCutout();
 
                 sw.Stop();
                 Debug.WriteLine("CreateColorCutout " + sw.ElapsedMilliseconds + " ms");
@@ -847,6 +847,8 @@ namespace Imaging.Parsing
                             continue;
                         Color c = customImage.GetPixel(p.X, p.Y);
                         DataColors dc = c.GetHue();
+                        if (c == Color.FromArgb(255, 255, 255))
+                            dc = DataColors.White;
                         ColorCount cc = colors.FirstOrDefault(a => a.Color == dc);
                         if (cc == null)
                         {

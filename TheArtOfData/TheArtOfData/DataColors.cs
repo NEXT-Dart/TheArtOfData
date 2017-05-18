@@ -72,8 +72,8 @@ namespace TheArtOfData
 
         public static implicit operator Color(DataColors dc)
         {
-            float s = rand.Next(750, 1000) / 1000f;
-            float v = rand.Next(750, 1000) / 1000f;
+            float s = rand.Next(600, 1000) / 1000f;
+            float v = rand.Next(600, 1000) / 1000f;
             switch (dc.value)
             {
                 case 0:
@@ -85,13 +85,13 @@ namespace TheArtOfData
                 case 3:
                     return new HSVColor(60, s, v).ToRGB();
                 case 4:
-                    return new HSVColor(315, s, v).ToRGB();
+                    return new HSVColor(315, 1, 1).ToRGB();
                 case 5:
                     return new HSVColor(175, s, v).ToRGB();
                 case 6:
                     return new HSVColor(25, s, v).ToRGB();
                 case 7:
-                    return new HSVColor(275, s, v).ToRGB();
+                    return new HSVColor(275, 1, 1).ToRGB();
                 default:
                     return Color.White;
             }
